@@ -92,3 +92,85 @@ Promise.all([promise1, promise2])
 .catch((error) => {
     console.error(error);
 });
+
+
+// 콜백으로 해결
+function getData(callbackFunc) {
+    $.get('url', function(response) {
+        callbackFunc(response); // 서버에서 받은 데이터 response를 callbackFunc() 함수에 넘겨줌
+    });
+}
+
+getData(function(tableData) {
+    console.log(tableData); // $.get()의 response 값이 tableData에 전달됨
+});
+
+// Promise 사용
+function getData(callback) {
+    // new Promise() 추가
+    return new Promise(function(resolve, reject) {
+        $.get('url', function(response) {
+            // 데이터를 받으면 resolve 호출
+            resolve(response);
+        });
+    });
+}
+//getData() 의 실행이 끝나면 호출되는 then()
+getData().then(function(tableData) {
+    console.log(tableData); // $.get()와 response 값이 tableData에 전달됨
+});
+
+/* 프로미스의 3가지 상태
+Pending(대기) : 비동기 처리 로직이 아직 완료되지 않은 상태
+Fulfilled(이행) : 비동기 처리가 완료되어 프로미스가 결과 값을 반환해준 상태
+Rejected(실패) : 비동기 처리가 실패하거나 오류가 발생한 상태
+*/
+
+new Promise ((resolve, reject) => { // new Promise 메서드를 호출하면 대기(Pending) 상태
+    resolve(); // 이행(fullfilled) 상태
+});
+
+function getData() {
+    return new Promise((resolve, reject) => {
+        const data = 100;
+        resolve(data);
+    });
+}
+getData().then(resolveData => {
+    console.log(resolveData); // 100
+});
+
+// setTimeout 을 이용한 예제
+new Promise((resolve, reject) => {
+    setTimeout(function() {
+        resolve(1);
+    }, 2000);
+})
+.then(function(result) {
+    console.log(result);    // 1
+    return result + 10;
+})
+.then(result => {
+    console.log(result);    // 11
+    return result + 20;
+})
+.then(result => {
+    console.log(result);    // 31
+});
+
+// 프로미스의 에러 처리 방법 
+function getData() {
+    return new Promise((resolve, reject) => {
+        reject('failed');
+    });
+}
+// 1. then()의 두 번째 인자로 에러를 처리 (then의 첫 번째 콜백 함수 내부에서 오류가 나는 경우 오류를 잡아내지 못함)
+getData().then(function() {
+
+}, function(err) {
+    console.error(err);
+});
+// 2. catch()를 이용 (가급적 이걸로)
+getData().then().catch(err => {
+    console.error(err);
+});
