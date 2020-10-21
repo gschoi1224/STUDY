@@ -1,0 +1,26 @@
+> process.version
+v14.0.0 // 설치된 노드의 버전
+> process.arch 
+x64     // 프로세서 아키텍처 정보 (arm, ia32 등의 값일 수도 있음)
+> process.platform
+win32   // 운영체제 플랫폼 정보 (Linux나 darwin, freebsd등의 값일 수도 있음)
+> process.pid
+1260    // 현재 프로세스의 아이디 (프로세스를 여러 개 가질 때 구분할 수 있음)
+> process.uptime()
+199.36  // 프로세스가 시작된 후 흐른 시간 (단위는 초)
+> process.execPath
+'C:\\Program Files\\nodejs\\node.exe'   // 노드의 경로
+> process.cwd()
+'D:\\CGS\\최경선\\git\\STUDY\\NODE\\module' // 현재 프로세스가 실행되는 위치
+> process.cpuUsage()
+{ user: 484000, system: 234000 }    //현재 cpu 사용량
+
+=== 중요 ===
+> process.env   // 환경 변수들을 나타냄
+NODE_OPTIONS : 노드를 실행할 때의 옵션들을 입력받는 환경 변수 --max-old-space-size=8192는 노드의 메모리를 8GB까지 사용할 수 있음
+UV_THREADPOOL_SIZE : 노드에서 기본적으로 사용하는 스레드풀의 스레드 개수를 조절할 수 있음
+이외에도 중요한 키를 저장하는 공간으로도 사용됨 데이터베이스 비밀번호나 API 키 등을 넣을 수 있음
+예)
+const secretId = process.env.SECRET_ID;
+const secretCode = process.env.SECRET_CODE;
+넣는 방법은 운영체제마다 차이가 있으니 dotenv를 사용하면 한번에 모든 운영체제에 동일하게 넣을 수 있음

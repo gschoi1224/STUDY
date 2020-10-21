@@ -22,7 +22,7 @@ promise
 /*
 프로미스 내부에서 resolve가 호출되면 then이 실행되고, reject가 호출되면 catch가 실행됨. finally 부분은 무조건 실행됨
 즉 resolve('성공')이 호출되면 then의 message가 '성공'이 되고 reject('실패')가 호출되면 catch의 error가 '실패'가 되는 것임
-프로미스는 실행은 바로 하되 결과값은 나중에 받는 객체. 결과는 실행이 완료된 후 then이나 catch 메서드를 통해 받음 
+프로미스는 실행은 바로 하되 결괏값은 나중에 받는 객체. 결과는 실행이 완료된 후 then이나 catch 메서드를 통해 받음 
 */
 
 promise
