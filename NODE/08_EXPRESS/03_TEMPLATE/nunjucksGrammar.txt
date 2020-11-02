@@ -1,0 +1,84 @@
+1. 변수
+    res.render 호출 시 보내는 변수를 넌적스가 처리함. 
+    넌적스에서 변수는 {{}}로 감쌈.
+    내부에 변수를 사용할 수도 있음. 변수를 선언할 때는 {% set 변수 = '값' %}를 사용함.
+    HTML을 이스케이프하고 싶지 않다면 {{변수 | sfae}}를 사용함.
+
+    <h1>{{title}}</h1>
+    <% set node = 'Node.js' %>
+    <% set js = 'Javascript' %>
+    <p>{{node}}와 {{js}}</p>
+    <p>{{'<strong>이스케이프</strong>'}}</p> -> <p>&lt;strong&gt;이스케이프&lt/strong&gt;
+    <p>{{'<strong>이스케이프</strong>' | safe}}</p> => <p><strong>이스케이프</strong></p>
+
+2. 반복문
+    넌적스에서는 특수한 구문을 {% %} 안에 씀. 따라서 반복문도 이 안에 넣으면 됨.
+    반복문에서 인덱스를 사용하고 싶다면 loop.index라는 특수한 변수를 사용할 수 있음.
+    <ul>
+        {% set fruit = ['사과', '배', '오렌지', '바나나', '복숭아']} %}
+        {% for item in fruit %}
+        <li>{{loop.index}}번째 {{item}}</li>
+        {% endfor %}
+    </ul>
+
+3. 조건문
+    {% if isLogeedIn %}
+    <div>로그인 되었습니다.</div>
+    {% else %}
+    <div>로그인이 필요합니다.</div>
+    {% endif %}
+
+    case문은 없음.
+
+4. include
+    [header.html]
+    <header>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+    </header>
+    
+    [footer.html]
+    <footer>
+        <div>푸터입니다.</div>
+    </footer>
+    
+    [main.html]
+    {% include "header.html" %}
+    <main>
+        <h1>메인 파일</h1>
+        <p>다른 파일을 include할 수 있습니다.</p>
+    </main>
+    {% include "footer.html" %}
+
+5. extends와 block
+    [layout.html]
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>{{title}}</title>
+            <link rel="stylesheet" href="/style.css"/>
+            {% block style %}
+            {% endblock %}
+        </head>
+        <body>
+            <header>헤더입니다.</header>
+            {% block content %}
+            {% endblock %}
+            <footer>푸터입니다</footer>
+            {% block script %}
+            {% endblock %}
+        </body>
+    </html>
+
+    [body.html]
+    {% extends 'layout.html' %}
+
+    {% block content %}
+    <main>
+        <p>내용입니다.</p>
+    </main>
+    {% endblock %}
+
+    {% block sript %}
+    <script src="/main.js"</script>
+    {% endblock %}
