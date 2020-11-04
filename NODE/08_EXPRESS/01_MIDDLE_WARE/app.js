@@ -74,7 +74,7 @@ app.use(morgan('dev')); // 요청과 응답에 대한 정보를 콘솔에 기록
 app.use('/', express.static(path.join(__dirname, 'public')));    // static 미들웨어는 정적인 파일들을 제공하는 라우터 역할을 함. 함수의 인수로 정적 파일들이 담겨 있는 폴더를 지정하면 됨. 
 app.use(express.json());    // body-parser : 요청의 본문에 있는 데이터를 해석해서 req.body 객체로 만들어주는 미들웨어. 보통 폼 데이터나 ajax 요청의 데이터를 처리함. 
                             // expree 4.16.0 버전부터 body-parser 미들웨어의 일부 기능이 익스프레스에 내장되었으므로 따로 설치할 필요가 없음
-                            // 단, Text(텍스트 데이터)나 Raw(버퍼 데이터)의 경우는 body-parserr를 설치해야함
+                            // 단, Text(텍스트 데이터)나 Raw(버퍼 데이터)의 경우는 body-parser를 설치해야함
 app.use(express.urlencoded({ extended : false})); // 주소 형식으로 데이터를 보내는 방식, extended 옵션 : false면 노드의 querystring 모듈을 사용하여 쿼리스트링을 해석하고, true면 qs 모듈을 사용해 쿼리스트링을 해석함
 app.use(cookieParser(process.env.COOKIE_SECRET));   // cookie-parser는 요청에 동봉된 쿠키를 해석해 req.cookies 객체로 만듦. 유효기간이 지난 쿠키는 알아서 걸러냄
                                                     // 첫 번째 인수로 비밀 키를 넣어줄 수 있음. 쿠키는 클라이언트에서 위조하기 쉬우므로 비밀 키를 통해 만들어낸 서명을 쿠키 값 뒤에 붙임. 서명된 쿠키는 req.signedCookies 객체에 담김.
