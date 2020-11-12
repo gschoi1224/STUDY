@@ -66,7 +66,7 @@ app.post('/upload', upload.none(), (req, res) => {
 });
 // 파일을 업로드하지 않았으므로 req.body만 존재함.
 
-dotenv.config();
+dotenv.config();    // env 파일 안에 있는 정보 불러오기
 const app = express();
 app.set('port', process.env.PORT || 3000);  // 서버가 실행될 포트 설정. process.env 객체에 PORT 속성이 있다면 그 값을 사용하고, 없다면 3000번 포트를 이용
 
