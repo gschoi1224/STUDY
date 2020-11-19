@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 module.exports = () => {
     // 1. 전략에 관한 설정을 하는 곳
-    passport.user(new localStrategy({
+    passport.use(new localStrategy({
             usernameFiled: 'email', // 로그인 라우터의 req.body 속성명을 적으면 됨
             passwordField: 'password',
         },

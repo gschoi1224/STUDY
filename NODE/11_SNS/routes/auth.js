@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const User = require('../models/user');
 
-const router = express.Rounter();
+const router = express.Router();
 
 // 1 회원가입
 router.post('/join', isNotLoggedIn, async(req, res, next) => {
@@ -57,10 +57,10 @@ router.get('/logout', isLoggedIn, (req, res) => {
 // 카카오
 router.get('/kakao', passport.authenticate('kakao')); // 로그인 과정 시작
 
-router.get('/kakao/callback', passport.authenticate('kakao'), { // 로그인 성공 여부 결과를 받음
+router.get('/kakao/callback', passport.authenticate('kakao', { // 로그인 성공 여부 결과를 받음
     failureRedirect: '/', // 로그인에 실패했을 떄 이동할 곳
 }), (req, res) => { // 성공할시 수행할 미들웨어
     res.redirect('/');
-};
+});
 
 module.exports = router;
