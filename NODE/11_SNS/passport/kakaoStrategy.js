@@ -21,7 +21,7 @@ module.exports = () => {
                 } else { // 3. 회원가입 진행
                     const newUser = await User.create({ // 카카오에서 인증 후 callbackURL에 적힌 주소로 accessToken, refreshToken, profile을 보내줌. profile에는 사용자 정보가 들어있음
                         email: profile._json && profile._json.kakao_account_email,
-                        nuick: profile.displayName,
+                        nick: profile.displayName,
                         snsId: profile.id,
                         provider: 'kakao',
                     });

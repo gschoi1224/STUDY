@@ -6,13 +6,14 @@ const User = require('../models/user');
 module.exports = () => {
     // 1. 전략에 관한 설정을 하는 곳
     passport.use(new localStrategy({
-            usernameFiled: 'email', // 로그인 라우터의 req.body 속성명을 적으면 됨
+            usernameField: 'email', // 로그인 라우터의 req.body 속성명을 적으면 됨
             passwordField: 'password',
         },
-        // 2. 실제 전략을 수행하는 async 함수 new localStrategy 생성자의 두 번째 인수
-        async(email, password, done) => { // 첫 번째 인수에서 넣어준 email과 password는 각각 async 함수의 첫 번째와 두 번째 매개변수가 됨.
+        async(email, password, done) => { // 2. 실제 전략을 수행하는 async 함수 new localStrategy 생성자의 두 번째 인수 
+            // 첫 번째 인수에서 넣어준 email과 password는 각각 async 함수의 첫 번째와 두 번째 매개변수가 됨.
             try {
                 const exUser = await User.findOne({ where: { email } });
+                console.log(exUser);
                 if (exUser) {
                     const result = await bcrypt.compare(password, exUser.password);
                     if (result) {

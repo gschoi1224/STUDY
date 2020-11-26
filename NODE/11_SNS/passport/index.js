@@ -8,8 +8,19 @@ module.exports = () => {
         done(null, user.id);
     });
 
-    passport.deserializeUser((id, done) => {
-        User.findOne({ where: { id } })
+    passport.deserializeUser((id, done) => { // 라우터가 실행되기 전에 deserializeUser가 먼저 실행됨. 
+        User.findOne({
+                where: { id },
+                include: [{
+                    model: User,
+                    attribute: ['id', 'nick'], // 비밀번호로 조회하는 것을 방지하기 위해
+                    as: 'Followers',
+                }, {
+                    model: User,
+                    attribute: ['id', 'nick'],
+                    as: 'Followings',
+                }],
+            })
             .then(user => done(null, user))
             .catch(err => done(err));
     });

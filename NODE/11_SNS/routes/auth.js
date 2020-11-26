@@ -29,7 +29,7 @@ router.post('/join', isNotLoggedIn, async(req, res, next) => {
 
 // 2. 로그인
 router.post('/login', isNotLoggedIn, (req, res, next) => {
-    passport.authentiocate('local', (authError, user, info) => { // 로컬 로그인 전략을 수행
+    passport.authenticate('local', (authError, user, info) => { // 로컬 로그인 전략을 수행
         if (authError) { // 첫 번째 매개변수 값이 있다면 실패
             console.error(authError);
             return next(authError);
