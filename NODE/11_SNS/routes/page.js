@@ -1,6 +1,7 @@
 const express = require('express');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const { Post, User, Hashtag } = require('../models');
+const db = require('../models');
 
 const router = express.Router();
 
@@ -23,13 +24,22 @@ router.get('/join', isNotLoggedIn, (req, res) => {
 router.get('/', async(req, res, next) => {
     try {
         const posts = await Post.findAll({ // 게시글 조회
-            include: {
-                model: User,
-                attribute: ['id', 'nick'], // 작성자의 아이디와 닉네임을 JOIN 해서 제공
-            },
+            include: [{
+                    model: User,
+                    attribute: ['id', 'nick'], // 작성자의 아이디와 닉네임을 JOIN 해서 제공
+                },
+                {
+                    model: User,
+                    attribute: ['id'], // 비밀번호로 조회하는 것을 방지하기 위해
+                    as: 'likers',
+                }
+            ],
             order: [
                 ['createdAt', 'DESC'] // 최신순으로 정렬
             ],
+        });
+        posts.map(post => {
+            post.likers = post.likers.map(l => l.id);
         });
         res.render('main', {
             title: 'NodeBird',
@@ -50,7 +60,12 @@ router.get('/hashtag', async(req, res, next) => { // 해시태그로 조회하�
         const hashtag = await Hashtag.findOne({ where: { title: query } }); // DB에서 해당 해시태그를 검색
         let posts = [];
         if (hashtag) { // 해시태그가 있다면 시퀄라이즈에서 제공하는 getPosts 메서드로 모든 게시글을 가져옴. 
-            posts = await hashtag.getPosts({ include: [{ model: User }] }); // 가져올 때는 작성자 정보를 합침.
+            posts = await hashtag.getPosts({
+                include: [{ model: User, attribute: ['nick', 'id'] },
+                    { model: User, as: 'likers', attribute: ['id'] }
+                ]
+            }); // 가져올 때는 작성자 정보를 합침.
+
         }
         return res.render('main', {
             title: `${query} | NodeBird`,

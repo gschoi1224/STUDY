@@ -28,14 +28,21 @@
             <input type="hidden" value="{{twit.User.id}}" class="twit-user-id">
             <input type="hidden" value="{{twit.id}}" class="twit-id">
             <div class="twit-author">{{twit.User.nick}}</div>
-            {% if not followerIdList.includes(twit.User.id) and twit.User.id !== user.id %}
-            <button class="twit-follow">팔로우하기</button> {% endif %}
+            {% if not followerIdList.includes(twit.User.id) and twit.User.id !== user.id and user != null %}
+            <button class="twit-follow">팔로우하기</button> {% endif %} {% if followerIdList.includes(twit.User.id) and twit.User.id !== user.id and user %}
+            <button class="twit-not-follow">팔로우끊기</button> {% endif %}
             <div class="twit-content">{{twit.content}}</div>
             {% if twit.img %}
             <div class="twit-img">
                 <img src="{{twit.img}}" onerror="this.src = this.src.replace(/\/thumb\//, '/original/');" alt="섬네일">
             </div>
             {% endif %}
+            <span>좋아요 {{twit.likers.length}}개</span><br>
+            <!-- 좋아요가 안 된 상태이고 내 게시물이 아님 -->
+            {% if not twit.likers.includes(user.id) and twit.User.id !== user.id and user != null %}
+            <button class="twit-like">좋아요</button> {% endif %} {% if twit.likers.includes(user.id) %}
+            <button class="twit-dislike">좋아요 취소</button> {% endif %} {% if twit.User.id === user.id %}
+            <button class="twit-delete">삭제</button> {% endif %}
         </div>
         {% endfor %}
     </div>
@@ -51,7 +58,7 @@
                 .then((res) => {
                     console.log(res);
                     document.getElementById('img-url').value = res.data.url;
-                    document.getElementById('img-preview').src = res.data.originalUrl;
+                    document.getElementById('img-preview').src = res.data.url;
                     document.getElementById('img-preview').style.display = 'inline';
                 })
                 .catch((err) => {
@@ -77,6 +84,76 @@
                 }
             }
         });
+    });
+    document.querySelectorAll('.twit-not-follow').forEach(tag => {
+        tag.addEventListener('click', () => {
+            const myId = document.querySelector('#my-id');
+            if (myId) {
+                const userId = tag.parentNode.querySelector('.twit-user-id').value;
+                if (userId !== myId.value) {
+                    if (confirm('팔로우를 끊으시겠습니까?')) {
+                        axios.post(`/user/${userId}/notFollow`)
+                            .then(() => {
+                                location.reload();
+                            })
+                            .catch(err => {
+                                console.error(err);
+                            });
+                    }
+                }
+            }
+        })
+    });
+    document.querySelectorAll('.twit-like').forEach(tag => {
+        const myId = document.querySelector('#my-id');
+        if (myId) {
+            tag.addEventListener('click', () => {
+                const postId = tag.parentNode.querySelector('.twit-id').value;
+                const userId = tag.parentNode.querySelector('.twit-user-id').value;
+                if (myId !== userId) {
+                    axios.post(`/post/like/${postId}`)
+                        .then(() => {
+                            location.reload();
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        });
+                }
+            });
+        }
+    });
+    document.querySelectorAll('.twit-dislike').forEach(tag => {
+        const myId = document.querySelector('#my-id');
+        if (myId) {
+            tag.addEventListener('click', () => {
+                const postId = tag.parentNode.querySelector('.twit-id').value;
+                const userId = tag.parentNode.querySelector('.twit-user-id').value;
+                if (myId !== userId) {
+                    axios.delete(`/post/like/${postId}`)
+                        .then(() => {
+                            location.reload();
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        })
+                }
+            })
+        }
+    });
+    document.querySelectorAll('.twit-delete').forEach(tag => {
+        const myId = document.querySelector('#my-id');
+        if (myId) {
+            tag.addEventListener('click', () => {
+                const postId = tag.parentNode.querySelector('.twit-id').value;
+                axios.delete(`/post/${postId}`)
+                    .then(() => {
+                        location.reload();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                    });
+            });
+        }
     });
 </script>
 {% endblock %}

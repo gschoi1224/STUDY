@@ -35,7 +35,7 @@ sequelize.sync({ force: false })
 
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/img', express.static(path.join(__dirname, 'uplioads'))); // 업로드한 이미지를 제공
+app.use('/img', express.static(path.join(__dirname, 'uploads'))); // 업로드한 이미지를 제공
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));

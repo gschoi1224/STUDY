@@ -3,8 +3,9 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const { Post, Hashtag } = require('../models');
+const { Post, Hashtag, User } = require('../models');
 const { isLoggedIn } = require('./middlewares');
+const { ESRCH } = require('constants');
 
 const router = express.Router();
 
@@ -30,7 +31,7 @@ const upload = multer({
 
 router.post('/img', isLoggedIn, upload.single('img'), (req, res) => {
     console.log(req.file);
-    res.json({ url: `/img/${req.file.filename}`, originalUrl: req.file.location });
+    res.json({ url: `/img/${req.file.filename}` });
 });
 
 const upload2 = multer();
@@ -59,4 +60,51 @@ router.post('/', isLoggedIn, upload2.none(), async(req, res, next) => {
     }
 });
 
+router.post('/like/:postId', isLoggedIn, async(req, res, next) => {
+    try {
+        console.log(req.user.id);
+        const user = await User.findOne({ where: { id: req.user.id } });
+        console.log(user);
+        const postId = req.params.postId;
+        const post = await Post.findOne({ where: { id: postId } });
+        if (user && post) {
+            console.log(parseInt(user.id, 10));
+            await post.addLikers(parseInt(user.id, 10));
+            res.send('success');
+        } else {
+            res.status(404).send('no user or no post');
+        }
+    } catch (err) {
+        console.error(err);
+    }
+});
+router.delete('/like/:postId', isLoggedIn, async(req, res, next) => {
+    try {
+        const user = await User.findOne({ where: { id: req.user.id } });
+        const postId = req.params.postId;
+        const post = await Post.findOne({ where: { id: postId } });
+        if (user && post) {
+            await post.removeLikers(parseInt(user.id, 10));
+            res.send('success');
+        } else {
+            res.status(404).send('no user or no post');
+        }
+    } catch (err) {
+        console.error(err);
+    }
+});
+router.delete('/:postId', isLoggedIn, async(req, res, next) => {
+    try {
+        const postId = req.params.postId;
+        const post = Post.findOne({ where: { id: postId } });
+        if (post) {
+            const result = await Post.destroy({ where: { id: postId } });
+            res.send('success');
+        } else {
+            res.status(404).send('no post');
+        }
+    } catch (err) {
+        console.error(err);
+    }
+});
 module.exports = router;

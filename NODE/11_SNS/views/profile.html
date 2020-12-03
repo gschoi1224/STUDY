@@ -13,4 +13,44 @@
         {% endfor %} {% endif %}
     </div>
 </div>
+
+<div class="timeline">
+    <form id="update-form" action="/user/update" method="POST">
+        <!-- put 방식으로 전송 -->
+        <div class="input-group">
+            <label for="join-email">이메일</label>
+            <input id="join-email" type="email" name="email" value="{{user.email}}">
+        </div>
+        <div class="input-group">
+            <label for="join-nick">닉네임</label>
+            <input id="join-nick" type="text" name="nick" value="{{user.nick}}">
+        </div>
+        <button id="join-btn" type="submit" class="btn">수정</button>
+    </form>
+</div>
+<script type='text/javascript'>
+    document.getElementById('update-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        const nick = e.target.nick.value;
+        if (!email) {
+            return alert('이메일을 입력하세요');
+        }
+        if (!nick) {
+            return alert('닉네임을 입력하세요');
+        }
+        try {
+            const result = await axios.put('/user/update', {
+                email,
+                nick
+            });
+            console.log(result);
+            if (result.data == 'success') {
+                location.href = "/";
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    });
+</script>
 {% endblock %}
