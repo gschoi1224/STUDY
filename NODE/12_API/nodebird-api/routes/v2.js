@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const url = require('url');
 
-const { verifyToken, apiLimiter, apipremiumLimiter } = require('./middlewares');
+const { verifyToken, apiLimiter } = require('./middlewares');
 const { Domain, User, Post, Hashtag } = require('../models');
 
 const router = express.Router();
@@ -23,14 +23,15 @@ router.use(async(req, res, next) => { // 모든 라우터에 적용
     }
 });
 
-router.post('/token', apiLimiter, async(req, res) => {
+router.post('/token', async(req, res) => {
+    console.log('!!!!!!!!!/token');
     const { clientSecret } = req.body;
     try {
         const domain = await Domain.findOne({
             where: { clientSecret },
             include: {
                 model: User,
-                attribute: ['nick', 'id'],
+                attributes: ['nick', 'id'],
             },
         });
         if (!domain) {
@@ -39,9 +40,11 @@ router.post('/token', apiLimiter, async(req, res) => {
                 message: '등록되지 않은 도메인입니다. 먼저 도메인을 등록하세요'
             });
         }
+        console.log(domain);
         const token = jwt.sign({
             id: domain.User.id,
             nick: domain.User.nick,
+            type: domain.type,
         }, process.env.JWT_SECRET, {
             expiresIn: '30m', // 30분
             issuer: 'nodebird',

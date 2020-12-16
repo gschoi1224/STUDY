@@ -5,8 +5,9 @@ const router = express.Router();
 const URL = 'http://localhost:8002/v2';
 
 // 1. NodeBird API에 요청을 보내는 함수. 자주 재사용되므로 분리함
-axios.defaults.headers.origin = 'http://localhost:4000'; // origin 헤더 추가. 어디서 요청을 보내는지 파악하기 위해 사ㅛㅇㅇ
+axios.defaults.headers.origin = 'http://localhost:4001'; // origin 헤더 추가. 어디서 요청을 보내는지 파악하기 위해 사ㅛㅇㅇ
 const request = async(req, api) => {
+    console.log('request : ', `${URL}${api}`);
     try {
         if (!req.session.jwt) { // 세션에 토큰이 없으면
             const tokenResult = await axios.post(`${URL}/token`, {
@@ -18,9 +19,6 @@ const request = async(req, api) => {
             headers: { authorization: req.session.jwt },
         }); // API 요청
     } catch (error) {
-        console.log('response : ', error.response);
-        console.log('response.status : ', error.response.status);
-        console.log('같은지 : ', error.status === 419);
         if (error.response.status === 419) { // 토큰 만료 시 토큰 재발급 받기
             delete req.session.jwt;
             return request(req, api);
@@ -85,6 +83,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/myFollows', async(req, res, next) => {
+    console.log('myFollows');
     try {
         const result = await request(
             req, '/user/follows',

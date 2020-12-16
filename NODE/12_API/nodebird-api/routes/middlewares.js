@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const RateLimit = require('express-rate-limit');
+const { Domain, User } = require('../models');
 
 exports.verifyToken = (req, res, next) => {
     try {
@@ -8,6 +9,7 @@ exports.verifyToken = (req, res, next) => {
         // 메서드의 첫 번째 인수로 토큰을, 두 번째 인수로 토큰의 비밀 키를 넣음
         return next();
     } catch (err) {
+        console.error(err);
         if (err.name === 'TokenExpiredError') { // 유효 기간 초과
             return res.status(419).json({
                 code: 419,
@@ -39,31 +41,53 @@ exports.isNotLoggedIn = (req, res, next) => {
 };
 
 exports.apiLimiter = (req, res, next) => {
-    return new RateLimit({
-        windowMs: 60 * 1000, // 1분 기준시간
-        max: 1, // 허용 횟수
-        delayMs: 0, // 호출 간격
-        handler(req, res) { // 제한 시간 초과 시 콜백 함수
+    console.log(req.decoded);
+    if ('premium' === req.decoded.type) {
+        console.log('프리미엄이란다');
+        new RateLimit({
+            windowMs: 10 * 1000, // 1분 기준시간
+            max: 1, // 허용 횟수
+            delayMs: 0, // 호출 간격
+            handler(req, res) { // 제한 시간 초과 시 콜백 함수
+                res.status(this.statusCode).json({
+                    code: this.statusCode, // 기본값 429
+                    message: `10초에 한 번만 요청할 수 있습니다.`,
+                });
+            },
+        });
+        next();
+    } else {
+        new RateLimit({
+            windowMs: 60 * 1000, // 1분 기준시간
+            max: 1, // 허용 횟수
+            delayMs: 0, // 호출 간격
+            handler(req, res) { // 제한 시간 초과 시 콜백 함수
+                res.status(this.statusCode).json({
+                    code: this.statusCode, // 기본값 429
+                    message: `1분에 한 번만 요청할 수 있습니다.`,
+                });
+            },
+        });
+        next();
+    }
+};
+
+/*
+exports.apiLimiter = async(req, res, next) => {
+    new RateLimit({
+        windowMs: 60 * 1000, // 1분
+        max: 10,
+        delayMs: 0,
+        handler(req, res) {
             res.status(this.statusCode).json({
                 code: this.statusCode, // 기본값 429
-                message: `1분에 한 번만 요청할 수 있습니다.`,
+                message: '1분에 한 번만 요청할 수 있습니다.',
             });
         },
     });
-}
-
-exports.apipremiumLimiter = new RateLimit({
-    windowMs: 10 * 1000, // 1분 기준시간
-    max: 1, // 허용 횟수
-    delayMs: 0, // 호출 간격
-    handler(req, res) { // 제한 시간 초과 시 콜백 함수
-        res.status(this.statusCode).json({
-            code: this.statusCode, // 기본값 429
-            message: `10초에 한 번만 요청할 수 있습니다.`,
-        });
-    },
-});
-
+    next();
+};
+*/
 
 exports.deprecated = (req, res) => {
     res.status(410).json({
