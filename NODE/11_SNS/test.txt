@@ -1,3 +1,4 @@
+1. 유닛 테스트
 jest 
 - 설치 : npm i -D jest - 개발 시에만 사용하므로 -D
 - package.json에 test라는 명령어 등록 ("test" : "jest")
@@ -9,3 +10,27 @@ jest
 - jest.fn(() => 반환값) : 함수 모킹할 때 사용
 - toBeCalledTimes(숫자) : 정확하게 몇 번 호출되었는지를 체크
 - toBeCalledWith(인수) : 특정 인수와 함께 호출되었는지를 체크
+- jest.mock : 모듈 모킹 가능
+- 모킹할 메서드.mockReturnValue(가짜 반환값)
+
+2. 테스트 커버리지
+- package.json에 jest 설정 입력 ("coverage"  : "jest --coverage") 실행은 > npm run coverage 로
+- File(파일과 폴더 이름), %Stmts(구문 비율), % Branch(if문 등의 분기점 비율), % Funcs(함수 비율), % Lines(코드 줄 수 비율), Uncovered Line #s(커버되지 않은 줄 위치)
+
+3. 통합 테스트
+- supertest 설치 > npm i -D supertest
+- supertest를 사용하기 위해서는 app 객체를 모듈로 만들어 분리해야 함. app.js 파일에서 app 객체를 모듈로 만든 후, server.js에서 불러와 listen 하도록 수정
+- config/config.json test부분 수정 후 > npx sequelize db:create --env test로 test db 생성
+- beforeAll(테스트 실행 전 수행), afterAll(모든 테스트가 끝난 후), beforeEach(각각의 테스트 수행 전), afterEach(각각의 테스트 수행 후)
+- request 함수를 불러와서 get, post, put, patch, delete 등의 메서드로 원하는 라우터에 요청을 보낼 수 있음
+- request.agent(app); //하나 이상의 요청에서 재사용할 수 있음
+
+4. 부하테스트
+- 서버가 얼마만큼의 요청을 견딜 수 있는지 테스트
+- artillery 설치 > npm i -D artillery
+- > npx artillery quick --count (가상 사용자 수) -n (요청 횟수) (url) : 빠르게 부하테스트 하는 방법
+- Sceanarios launched(가상의 사용자 수), Request Completed(요청이 수행된 수), RPS sent(초당 처리된 요청 수)
+- Request latency(응답지연속도) 중요
+- json 파일을 통해 구체적인 시나리오를 작성할 수도 있음
+- duration(초 동안) * arrivalRate(초당 사용자 수) = 총 사용자 수
+- > npx artillery run (json 파일명) : 실행

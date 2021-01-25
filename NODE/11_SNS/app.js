@@ -69,6 +69,11 @@ app.use((err, req, res, next) => {
     res.render('error');
 });
 
+module.exports = app;
+
+/*
+supertest 하기 위해
 app.listen(app.get('port'), () => {
     console.log(`${app.get('port')}번 포트에서 서버 대기 중`);
 });
+*/
