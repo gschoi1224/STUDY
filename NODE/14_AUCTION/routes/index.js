@@ -71,7 +71,7 @@ router.post('/good', isLoggedIn, upload.single('img'), async(req, res, next) => 
             price,
         });
         const end = new Date();
-        end.setDate(end.Date() + 1); // 하루 뒤
+        end.setDate(end.getDate() + 1); // 하루 뒤
         schedule.scheduleJob(end, async() => { // 일정 예약(실행될 시각, 해당 시각이 되었을 때 수행할 콜백 함수)
             const success = await Auction.findOne({
                 where: { GoodId: good.id },
@@ -159,6 +159,21 @@ router.post('/good/:id/bid', isLoggedIn, async(req, res, next) => {
     } catch (error) {
         console.error(error);
         return next(error);
+    }
+});
+
+// 낙찰자가 낙찰 내역을 볼 수 있는 곳
+router.get('/list', async (req, res, next) => {
+    try {
+        const goods = await Good.findAll({
+            where : { SoldId : req.user.id },
+            include : { model : Auction },
+            order : [[{ model : Auction }, 'bid', 'DESC']],
+        });
+        res.render('list', { title : '낙찰 목록 - NodeAuction', goods});
+    } catch (error) {
+        console.error(error);
+        next(error);
     }
 });
 
