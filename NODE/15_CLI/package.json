@@ -1,0 +1,16 @@
+{
+    "name": "15_CLI",
+    "version": "0.0.1",
+    "description": "nodejs cli program",
+    "main": "index.js",
+    "author": "CGS",
+    "license": "ISC",
+    "bin": {
+        "cli": "./command.js"
+    },
+    "dependencies": {
+        "chalk": "^4.1.0",
+        "commander": "^7.0.0",
+        "inquirer": "^7.3.3"
+    }
+}
