@@ -1,0 +1,81 @@
+package.json
+"start" : "NODE_ENV=production PORT=80 node server"
+리눅스나 맥에서 process.env를 동적으로 설정하는 방버
+
+이럴 때 윈도우에서는 cross-env를 사용
+> npm i cross-env 설치하고
+"cross-env NODE_ENV=production PORT=80 node server"
+crossenv 아니고 cross-env!!
+
+npm i sanitize-html 
+- XSS 공격 막음
+- 악의적인 사용자가 사이트에 스크립트를 삽입하는 공격으로 스크립트가 포함되어 있으면 제거해줌
+- 예시
+    const sanitizeHtml = require('sanitize-html);
+    const html = "<script>location.href='https://gilbut.co.kr'</script>";
+    console.log(sanitizeHtml(html));  // ''
+
+npm i csurf (CSRF 공격 막음)
+- CSFR 공격 막음
+- 사용자가 의도치 않게 공격자가 의도한 행동을 하게 만드는 공격
+- 내가 한 행동이 내가 한 것이 맞다는 점을 인증해서 막을 수 있음
+- csurf 패키지를 통해 토큰을 발급하여 검증할 수 있음
+- 예시
+    const csrf = require('csruf');
+    const csrfProtection = csrf({ cookie : true });
+
+    app.get('/form', csrfProtection, (req, res) => {
+        res.render('csrf', { csrfToken : req.csrfToken()});
+    });
+
+    app.post('/form', csrfProtection, (req, res) => {
+        res.send('ok');
+    });
+
+pm2
+- 원활한 서버 운영을 위한 패키지
+- 가장 큰 기능은 서버가 에러로 인해 꺼졌을 때 서버를 다시 켜주는 것
+- 멀티 스레딩은 아니지만 멀티 프로세싱을 지원하여 노드 프로세스 개수를 한 개 이상으로 늘릴 수 있음.
+- 기본적으로 CPU는 코어를 하나만 사용하는데 pm2를 사용해서 프로세스를 여러 개 만들면 다른 코어들까지 사용할 수 있음
+- 클라이언트로부터 요청이 올 때 알아서 요청을 여러 노드 프로세스에 고르게 분배함. 하나의 프로세스가 받는 부하가 적어지므로 서비스를 더 원활하게 운영할 수 있음
+- 단점은 멀티 스레딩이 아니므로 서버의 메모리 같은 자원을 공유하지는 못하고 지금까지 세션을 메모리에 저장했는데, 메모리를 공유하지 못해서 프로세스 간에 세션이 공유되지 않게 됨.
+- 이 단점을 극복하기 위해 주로 멤캐시드나 레디스 같은 서비스를 사용함.
+- > pm2 start server.js 로 실행
+- > npx pm2 list 현재 프로세스 정보를 표시
+- > npx pm2 logs 로그 확인 -err 붙이면 에러만 표시 --lines 하면 출렬 줄 수를 바꿔줌
+- > npx pm2 kill 종료
+- > npx pm2 reload all 서버 재시작
+- > pm2 start app.j -i 0 : -i 뒤에 생성하길 원하는 프로세스 개수를 기입 0은 CPU 코어 개수만큼 프로세스를 생성한다는 뜻 -1은 하나 덜 생성하겠다는 뜻
+- > npx pm2 monit 현재 프로세스를 모니터링
+
+winston
+- 실제 서버를 운영할 때 console.log와 console.error를 대체하기 위한 모듈
+
+helmet, hpp
+- 서버의 각종 취약점을 보완해주는 패키지, 익스프레스 미들웨어로서 사용할 수 있음
+- helmet : http 헤더 설정을 바꿔주는 모듈
+- 기본적으로 배포 전에 이 두 패키지를 넣어주는게 좋음
+
+connect-redis
+- 멀티 프로세스 간 세션 공유를 위해 레디스와 익스프레스를 연결해주는 패키지
+- 기존에는 로그인할 때 express-session의 세션 아이디와 실제 자용자 정보가 메모리에 저장됨 따라서 서버가 종료되어 메모리가 날아가면 접속자들의 로그인이 모두 풀려버림
+- 이를 해결하기 위해 세션 아이디와 실제 사용자 정보를 데이터베이스에 저장해주는 데이터베이스가 레디스
+- 메모리 기반의 데이터베이스라서 성능이 우수하기 때문에 많이 사용함
+- > npm i redis connect-redis 설치
+- 서버에 직접 설치할 수도 있지만 레디스를 호스팅해주는 서비스를 쓰는 것이 편리함
+- 실제 서비스에서 서버 업데이트 시 로그인이 풀리는 현상을 막을 수 있음
+- express-rate-limit 패키지도 사용량을 메모리에 기록하므로 레디스에 기록하는 것이 좋음
+
+nvm, n
+- 노드 버전을 업데이트 하기 위한 패키지, 윈도에서는 nvm-installer를 사용하고, 리눅스나 맥에서는 n 패키지를 사용하면 편리함
+- > nvm list 버전 확인
+
+.gitignore 파일을 사용하면 업로드하지 않을 파일을 설정할 수 있음!
+> git init : 현재 디렉터리를 깃 관리 대상으로 지정하는 명령어
+> git add . : 모든 파일과 디렉터리(gitignore 제외)를 깃 관리 대상에 추가하는 명령어
+> git config --global user.email '이메일' : 사용자 이메일 설정
+> git config --global user.name '이름' : 사용자 이름 설정
+> git commit -m "내용" : 확정에 관한 설명 메시지
+> git remote add [별명] [주소] : 깃허브 주소 등록
+> git remote rm [별명] 으로 지울 수 있음
+> git push [별명] [브랜치] : 푸쉬하기
