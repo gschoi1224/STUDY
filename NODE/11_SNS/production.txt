@@ -79,3 +79,26 @@ nvm, n
 > git remote add [별명] [주소] : 깃허브 주소 등록
 > git remote rm [별명] 으로 지울 수 있음
 > git push [별명] [브랜치] : 푸쉬하기
+
+
+AWS (https://aws.amazon.com/ko/)
+- SSH를 사용하여 연결
+- git clone 주소 명령어를 통해 git 에서 소스코드를 내려받기
+- Lightsail에서는 기본적으로 비트나미 아파치 서버가 켜져 있으므로 꺼줌
+  -> cd /opt/bitami
+  -> sudo ./ctlscript.sh stop apache
+
+- nodebird 폴더로 이동하여 npm 패키지들을 설치해주고 MySQL 데이터베이스도 생성
+    -> cd ~/nodebird
+    -> npm i
+    -> npx sequelize db:create --env production
+    -> sudo npm start
+    
+- 리눅스 mysql 설치 방법에 따라 설치
+    > sudo apt-get update
+    > sudo apt-get install -y mysql-server
+    > sudo mysql_secure_installation
+    비밀번호 설정 안나오면
+    >mysqladmin -u root -p password 비밀번호 명령어로 비밀번호 설정하기
+    ERROR: Access denied for user 'root'@'localhost' 에러
+        -> MySQL 프롬프트에서 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '비밀번호';
