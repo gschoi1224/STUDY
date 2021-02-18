@@ -2,10 +2,11 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const AWS = require('aws-sdk');
+const multerS3 = require('multer-s3');
 
 const { Post, Hashtag, User } = require('../models');
 const { isLoggedIn } = require('./middlewares');
-const { ESRCH } = require('constants');
 
 const router = express.Router();
 
@@ -16,7 +17,16 @@ try {
     fs.mkdirSync('uploads');
 }
 
+// AWS에 대한 설정
+AWS.config.update({
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    region: 'ap-northeast-2',
+});
+
 const upload = multer({
+    /*
+    서버에 저장
     storage: multer.diskStorage({
         destination(req, file, cb) {
             cb(null, 'uploads/');
@@ -27,11 +37,25 @@ const upload = multer({
         },
     }),
     limits: { fileSize: 5 * 1024 * 1024 },
+    */
+    // AWS S3 에 저장
+    storage: multerS3({
+        s3: new AWS.S3(),
+        bucket: 'cgs-nodebird', // 버킷명
+        key(req, file, cb) { // 저장할 파일명, 버킷 내부에서 original 폴더 아래에 생성함
+            cb(null, `original/${Date.now()}${path.basename(file.originalname)}`);
+        },
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
 });
 
 router.post('/img', isLoggedIn, upload.single('img'), (req, res) => {
     console.log(req.file);
-    res.json({ url: `/img/${req.file.filename}` });
+    const originalUrl = req.file.location;
+    const url = originalUrl.replace(/\original\//, '/thumb/');
+    //res.json({ url: `/img/${req.file.filename}` }); // 서버에 저장
+    // AWS S3 저장
+    res.json({ url: req.file.location }); // S3 버킷 이미지 주소가 담겨 있음.
 });
 
 const upload2 = multer();
