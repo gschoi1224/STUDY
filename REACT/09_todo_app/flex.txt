@@ -1,0 +1,37 @@
+justify-content(가로 정렬)
+    - flex-start(default) : 왼쪽 정렬
+    - flex-end : 오른쪽 정렬
+    - center : 가운데 정렬
+    - space-between : 사이에 동일한 간격을 둠
+    - space-around : 주위에 동일한 간격을 둠
+
+align-items(세로 정렬)
+    - stretch(default) : 컨테이너에 맞도록 요소를 늘림
+    - baseline : 시작위치에 정렬
+    - flex-start : 컨테이너의 꼭대기로 정렬
+    - flex-end : 컨테이너의 바닥으로 정렬
+    - center : 세로선 상의 가운데로 정렬
+flex-direction(방향 결정)
+    - row : 텍스트의 방향과 동일하게 정렬
+    - row-reverse : 텍스트의 반대 방향으로 정렬
+    - column : 위에서 아래로 정렬
+    - column-reverse : 아래에서 위로 정렬
+    ※ Flex의 방향이  column일 경우 justify-content의 방향이 세로로, align-items의 방향이 가로로 바뀜
+order (순서 결정)
+    - <imteger>(-1, 0(default), 1...)
+align-self
+    - align-items 무시하고 개별 정렬 적용
+flex-wrap(몇 줄에 걸쳐 정렬할 것인지)
+    - nowrap : 모든 요소들을 한 줄에 정렬
+    - wrap : 요소들을 여러 줄에 걸쳐 정렬
+    - wrap-reverse : 요소들을 여러 줄에 걸쳐 반대로 정렬
+flex-flow(flex-direction과 flex-wrap 속성들을 간단히 한 속성)
+    - <flex-direction> <flex-wrap>
+align-content(여러 줄 사이의 간격을 지정할 수 있음)
+    - flex-start : 여러 줄들을 컨테이너의 꼭대기에 정렬
+    - flex-end : 여러 줄들을 컨테이너의 바닥에 정렬
+    - center : 여러 줄들을 세로선 상의 가운데에 정렬
+    - space-between : 여러 줄들 사이에 동일한 간격을 둠
+    - space-around : 여러 줄들 주위에 동일한 간격을 둠
+    - stretch : 여러 줄들을 컨테이너에 맞도록 늘림
+    ※ align-content는 여러 줄들 사이의 간격, align-items는 컨테이너 안에서 어떻게 모든 요소들이 정렬하는지를 지정

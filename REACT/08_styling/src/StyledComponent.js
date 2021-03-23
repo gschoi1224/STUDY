@@ -9,12 +9,16 @@ const sizes = {
 // 위에 있는 size 객체에 따라 자동으로 media 쿼리 함수를 만들어 줌
 // 참고 : https://www.styled-components.com/docs/advanced#media-templates
 const media = Object.keys(sizes).reduce((acc, label) => {
-  acc[label] = (...args) => css`
-    @media (max-width: ${sizes[label] / 16}em) {
-      ${css(...args)};
-    }
-  `;
-
+  acc[label] = (...args) => {
+    console.log(...args);
+    console.log(sizes[label]);
+    return css`
+      @media (max-width: ${sizes[label] / 16}em) {
+        ${css(...args)};
+      }
+    `;
+  };
+  console.log("return", acc);
   return acc;
 }, {});
 
@@ -35,8 +39,8 @@ const Box = styled.div`
     width: 100%;
   }
   */
-  ${media.desktop`width:768px;`}
   ${media.tablet`width: 100%;`}
+  ${media.desktop`width:768px;`}
 `;
 
 const Button = styled.button`
