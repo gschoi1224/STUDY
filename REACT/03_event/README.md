@@ -1,70 +1,36 @@
-# Getting Started with Create React App
+# 이벤트
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+사용자가 웹 브라우저에서 DOM 요소들과 상호 작용하는 것
 
-## Available Scripts
+## 주의 사항
 
-In the project directory, you can run:
+- 이벤트 이름은 카멜 표기법으로 작성해야함.
+- 이벤트에 실행할 자바스크립트 코드를 전달하는 것이 아니라 함수 형태의 객체를 전달함
+- DOM 요소에만 이벤트를 설정할 수 있음. (직접 만든 컴포넌트에는 이벤트를 자체적으로 설정할 수 없음)
+- 이렇게 하면 그냥 이름이 onClick인 props를 MyComponent에게 전달해 줄 뿐
 
-### `yarn start`
+```javascript
+<MyComponent onClick={doSomething} />
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 메서드 바인딩
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- 함수가 호출될 때 this는 호출부에 따라 결정되므로, 클래스의 임의 메서드가 특정 HTML 요소의 이벤트로 등록되는 과정에서 메서드와 this의 관계가 끊어져버림.
+- 임의 메서드가 이벤트로 등록되어도 this를 컴포넌트 자신으로 제대로 가리키기 위해서는 메서드를 this와 바인딩하는 작업이 필요함 만약 바인딩하지 않는 경우라면 this가 undefined를 가리키게 됨.
 
-### `yarn test`
+### SyntheticEvent(e)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```javascript
+onEvent = (e) => {
+  console.log(e);
+};
+```
 
-### `yarn build`
+- 여기서 e 객체는 SyntheticEvent로 웹 브라우저의 네이티브 이벤트를 감싸는 객체로 네이티브 이벤트와 인터페이스가 같으므로 순수 자바스크립트에서 HTML 이벤트를 다룰 때와 똑같이 사용하면 됨
+- SyntheticEvent는 네이티브 이벤트와 달리 이벤트가 끝나고 나면 이벤트가 초기화되므로 정보를 참조할 수 없음
+- 만약 비동기적으로 이벤트 객체를 참조할 일이 있다면 e.persist() 함수를 호출해 주어야 함
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Property Initializer Syntax를 이용한 메서드 작성
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- 메서드 바인딩은 새성자 메서드에서 하는 것이 정석이지만 새 메서드를 만들 때마다 constructor도 수정해야 해서 불편함
+- 바벨의 transform-class-properties 문법을 사용하여 간단히 화살표 함수 형태로 메서드를 정의할 수 있음

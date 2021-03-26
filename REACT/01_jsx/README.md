@@ -1,70 +1,61 @@
-# Getting Started with Create React App
+# JSX
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- 자바스크립트의 확장 문법이며 XML과 매우 비슷하게 생김.
+- 브라우저에서 실행 되기 전에 코드가 번들링되는 과정에서 바벨을 사용하여 일반 자바스크립트 형태의 코드로 변환됨
+- 예
+  - 변환 전
+  ```javascript
+  function App() {
+    return (
+      <div>
+        Hello <b>react</b>
+      </div>
+    );
+  }
+  ```
+  - 변환 후
+  ```javascript
+  function App() {
+    return React.createElement(
+      "div",
+      null,
+      "Hello",
+      React.createElement("b", null, "react")
+    );
+  }
+  ```
 
-## Available Scripts
+## 장점
 
-In the project directory, you can run:
+- 보기 쉽고 익숙하다
+- 더욱 높은 활용도 (HTML 뿐만 아니라 컴포넌트들도 JSX안에서 작성할 수 있음)
 
-### `yarn start`
+## 문법
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- ReactDom.render(JSX, 해당 JSX를 렌더링할 document 내부 요소)
+- **컴포넌트에 여러 요소가 있다면 반드시 부모 요소 하나로 감싸야 함**
+- 리액트 v16 이상 부터 도입된 Fragment로 감싸는 것도 가능
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```HTML
+<Fragment></Fragment> 또는 <></>;
+```
 
-### `yarn test`
+- JSX 안에서 자바스크립트 표현식을 쓰려면 {}
+- if문 대신 조건부 연산자 JSX 밖에서 if 문을 사용하여 사전에 값을 설정하거나 { } 안에 조건부 연산자(삼항) 사용
+- class 적용은 classNmae으로
+- css는 카멜케이스
+- br과 input 태그 열기만 하고 닫지 않으면 오류 발생
+- 주석은 {/_ 이런식으로 입력 _/} 또는 시작 태그가 여러 줄이 되면 // 주석 가능
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `yarn build`
+## ESLint 문법 검사 도구
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- 코드를 작성할 때 실수를 하면 에러 혹은 경고 메시지를 VS Code 에디터에서 바로 확인할 수 있음
+- 초록색은 무시 가능, 빨간색은 반드시 고쳐야 됨
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Prettier 코드 스타일 자동 정리 도구
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- JSX를 작성할 때는 코드의 가동성을 위해 들여쓰기를 사용
+- .prettierrc 파일을 만들어 커스터마이징 가능(세미콜론, 쉼표 등 사용여부)
+- 파일 > 기본 설정 > 설정 > Format on save 검색 후 체크

@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# 컴포넌트 반복
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 자바스크립트 배열의 map() 함수
 
-## Available Scripts
+```javascript
+arr.map(callback, [this.Arg]);
+```
 
-In the project directory, you can run:
+- callback : 새로운 배열의 요소를 생성하는 함수로 파라미터는 다음 세 가지
+  - currentValue : 현재 처리하고 있는 요소
+  - index : 현재 처리하고 있는 요소의 index 값
+  - array : 현재 처리하고 있는 원본 배열
+- thisArg(선택 항목) : callback 함수 내부에서 사용할 this 레퍼런스
+- 예)
 
-### `yarn start`
+  ```javascript
+  const numbers = [1, 2, 3, 4, 5];
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+  const processed = numbers.map((num) => num * num);
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+  console.log(processed); // [1, 4, 9, 16, 25]
+  ```
 
-### `yarn test`
+## 데이터 배열을 컴포넌트 배열로 변환하기
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- 문자열로 구성된 배열을 선언하고 그 배열 값을 사용하여 `<li>...</li>` JSX 코드로 된 배열을 새로 생성한 후 배열에 담기
 
-### `yarn build`
+```javascript
+const names = ["눈사람", "얼음", "눈", "바람"];
+const nameList = names.map((name) => <li>{name}</li>);
+return <ul>{nameList}</ul>;
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## **key**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- 리액트에서 key는 컴포넌트 배열을 렌더링했을 때 어떤 원소에 변동이 있었는지 알아내려고 사용함
+- key 값을 설정할 때는 map 함수의 인자로 전달되는 하뭇 내부에서 컴포넌트 props를 설정하듯이 설정하면 됨
+- **key 값은 항상 유일해야 함**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```javascript
+const nameList = names.map((name, index) => <li key={index}>{name}</li>);
+return <ul>{nameList}</ul>;
+```

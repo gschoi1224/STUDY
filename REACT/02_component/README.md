@@ -1,70 +1,117 @@
-# Getting Started with Create React App
+# 컴포넌트(Component)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+데이터가 주어졌을 때 이에 맞추어 UI를 만들어 주는 것은 물론이고, 라이프사이클 API를 이용하여 컴포넌트가 화면에서 나타날 때, 사라질 때, 변화가 일어날 때 주어진 작업들을 처리할 수 있으며, 임의 메서드를 만들어 특별한 기능을 붙여줄 수 있음.
 
-## Available Scripts
+## 클래스형 컴포넌트 (rcc 간편 입력)
 
-In the project directory, you can run:
+- state 기능 및 라이프사이클 기능을 사용할 수 있고 임의 메서드를 정의할 수 있음
+- render 함수가 꼭 있어야 하고, 그 안에서 보여 주어야 할 JSX를 반환해야 함
 
-### `yarn start`
+```javascript
+import React, { Component } from "react";
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+class README extends Component {
+  render() {
+    return <div></div>;
+  }
+}
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+export default README;
+```
 
-### `yarn test`
+## 함수형 컴포넌트 (rsc 간편 입력)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- 클래스형 컴포넌트보다 선언하기가 훨씬 편함
+- 메모리 자원도 클래스형 컴포넌트보다 덜 사용함.
+- state와 라이프사이클 API의 사용이 불가능함. (리액트 v16.8 업데이트 이후 Hooks라는 기능이 도입되면서 해결)
 
-### `yarn build`
+```javascript
+import React from "react";
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+const README = () => {
+  return <div></div>;
+};
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+export default README;
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+공식 메뉴얼에서는 컴포넌트를 새로 작성할 때 함수형 컴포넌트와 Hooks를 사용하도록 권장
 
-### `yarn eject`
+### 컴포넌트 만들기
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. 파일 만들기
+2. 코드 작성하기
+3. 모듈 내보내기 및 불러오기
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+JSX 내부에서 props 렌더링 - props 값은 컴포넌트 함수의 파라미터로 받아 와서 사용할 수 있음.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### PropTypes 종류
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- array : 배열
+- arrayOf(다른 PropType) : 특정 PropType으로 이루어진 배열
+- bool : true 혹은 false 값
+- func : 함수
+- number : 숫자
+- object : 객체
+- string : 문자열
+- symbol : ES6의 symbol
+- node : 렌더링할 수 있는 모든 것(숫자, 문자열, 혹은 JSX 코드. children도 node PropType)
+- istanceOf(클래스) : 특정 클래스의 인스턴스
+- oneOf(['dog', 'cat']) : 주어진 배열 요소 중 값 하나
+- oneOfType([React.PropTypes.string, PropTypes.number]) : 주어진 배열 안의 종류 중 하나
+- objectOf(React.PropTypes.number) : 객체의 모든 키 값이 인자로 주어진 PropType인 객체
+- shape({ name : PropTypes.string, num : PropTypes.number }) : 주어진 스키마를 가진 객체
+- any : 아무 종류
 
-## Learn More
+# state
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- 컴포넌트 내부에서 바뀔 수 있는 값
+- 클래스형 컴포넌트가 지니고 있는 state와 함수형 컴포넌트의 useState 라는 함수를 통해 사용하는 state
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```javascript
+this.setState((기존 상태, 현재 지니고 있는 props) => {})
+```
 
-### Code Splitting
+- 주의사항 : **state 값을 바꿀 때는 setState 혹은 useState를 통해 전달받은 세터 함수를 사용해야 함**
+- 잘못된 예)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```javascript
+// 클래스형 컴포넌트에서
+this.state.number = this.state.number + 1;
+this.state.array = this.array.push(2);
+this.state.object.value = 5;
+```
 
-### Analyzing the Bundle Size
+```javascript
+// 함수형 컴포넌트에서
+const [object, setObject] = useState({ a: 1, b: 1 });
+object.b = 2;
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- 배열이나 객체를 업데이트해야 할 때는 사본을 만들고 그 사본에 값을 업데이트한 후, 그 사본의 상태를 setState 혹은 세터 함수를 통해 업데이트
+- 예)
 
-### Making a Progressive Web App
+```javascript
+// 객체 다루기
+const object = { a: 1, b: 2, c: 3 };
+const nextObject = { ...object, b: 2 }; // 사본을 만들어서 b 값만 덮어 쓰기
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```javascript
+// 배열 다루기
+const array = [
+    { id : 1, value : true },
+    { id : 2, value : true },
+    { id : 3, value = false }
+];
+let nextArray = array.concat({ id : 4 });   // 새 항목 추가
+nextArray.filter(item => item.id !== 2);    // id가 2인 항목 제거
+nextArray.map(item => (item.id === 1 ? { ...item, value : false } : item)); // id가 1인 항목의 value를 false로 설정
+```
 
-### Advanced Configuration
+## 정리
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- props와 state는 둘 다 컴포넌트에서 사용하거나 렌더링할 데이터를 담고 있으므로 비슷해 보일 수 있음
+- props는 부모 컴포넌트가 설정하고, state는 컴포넌트 자체적으로 지닌 값으로 컴포넌트 내부에서 값을 업데이트할 수 있음.
+- 부모 컴포넌트의 state를 자식 컴포넌트의 props로 전달하고, 자식 컴포넌트에서 특정 이벤트가 발생할 때 부모 컴포넌트의 메서드를 호출하면 props도 유동적으로 사용할 수 있음
+- useState를 사용하는 것을 권장
