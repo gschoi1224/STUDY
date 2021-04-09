@@ -48,25 +48,34 @@ function increaseAndPrint2(n) {
             console.log(value);
             resolve(value);
         });
-    })
+    });
 }
 
-increaseAndPrint2(0).then((n) => {
-    return increaseAndPrint2(n);
-}).then(n => {
-    return increaseAndPrint2(n);
-}).then(n => {
-    return increaseAndPrint2(n);
-}).then(n => {
-    return increaseAndPrint2(n);
-}).then(n => {
-    return increaseAndPrint2(n);
-}).then(n => {
-    return increaseAndPrint2(n);
-}).then(n => {
-    return increaseAndPrint2(n);
-}).then(n => {
-    return increaseAndPrint2(n);
-}).catch(err => {
-    console.error(err);
-});
+increaseAndPrint2(0)
+    .then((n) => {
+        return increaseAndPrint2(n);
+    })
+    .then((n) => {
+        return increaseAndPrint2(n);
+    })
+    .then((n) => {
+        return increaseAndPrint2(n);
+    })
+    .then((n) => {
+        return increaseAndPrint2(n);
+    })
+    .then((n) => {
+        return increaseAndPrint2(n);
+    })
+    .then((n) => {
+        return increaseAndPrint2(n);
+    })
+    .then((n) => {
+        return increaseAndPrint2(n);
+    })
+    .then((n) => {
+        return increaseAndPrint2(n);
+    })
+    .catch((err) => {
+        console.error(err);
+    });
