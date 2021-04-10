@@ -6,10 +6,12 @@ const rl = readline.createInterface({
 
 let input = [];
 let output = [];
+let T;
 
 rl.on("line", function(line) {
-    input = input.concat(line);
-    if (input.length + 1 === parseInt(input[0])) integerCoffee();
+    input = T ? input.concat(line) : [];
+    T = T || parseInt(line);
+    if (input.length === T) integerCoffee();
 }).on("close", function() {
     process.exit();
 });
@@ -17,21 +19,27 @@ rl.on("line", function(line) {
 // 이 쿠폰들 중 최소 5개는 시즌 한정 음료 쿠폰이어야 한다.
 // 정수가 보유한 쿠폰으로 교환할 수 있는 최대 상품의 수를 계산하여 출력하시오.
 const integerCoffee = () => {
-    for (let i = 1; i < input.length; i++) {
+    input.map(v => {
         let cnt = 0;
-        let N = parseInt(input[i].split(" ")[0]); // 정수가 보유한 시즌 한정 음료 쿠폰의 수
-        let M = parseInt(input[i].split(" ")[1]); // 정수가 보유한 일반 음료 쿠폰의 수
-
-        while (N >= 5 && M >= 7) {
-            N -= 5;
-            M -= 7;
-            cnt++;
+        let N = BigInt(v.split(" ")[0]); // 정수가 보유한 시즌 한정 음료 쿠폰의 수
+        let M = BigInt(v.split(" ")[1]); // 정수가 보유한 일반 음료 쿠폰의 수
+        cnt = BigInt(N / BigInt(5)) > BigInt((N + M) / BigInt(12)) ? BigInt((N + M) / BigInt(12)) : BigInt(N / BigInt(5));
+        // N -= (cnt * 5);
+        // M -= (cnt * 7);
+        // if (N >= 5 && N + M >= 12) {
+        //     N -= (12 - M);
+        //     M -= M; 
+        //     cnt++;
+        // }
+        // if (N >= 12) {
+        //     cnt += parseInt(N / 12);
+        // }
+        while(N + M < BigInt(12) * cnt) {
+            if (cnt === 0) break;
+            cnt--;
         }
-
-        output = output.concat(cnt);
-    }
-    output.map((i) => {
-        console.log(i);
+        //console.log(`남은 한정 : ${N}, 일반 : ${M}`);
+        console.log(cnt.toString().replace('n', ''));
     });
     rl.close();
 };
