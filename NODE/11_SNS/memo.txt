@@ -31,7 +31,7 @@
               as는 따로 지정하지 않았으니 post.getHashtags, post.addHashtags, hashtags.getPosts와 같은 기본 이름의 관계 메서드들이 생성됨.
             > 자동으로 생성된 모델도 db.sequelize.models.PostHashtag, db.sequelize.models.Follw와 같이 접근 가능.
         - config/config.json : 시퀄라이즈는 config.json을 읽어 데이터베이스를 생성해주는 기능이 있음. 
-        - 콘솔에서 npx sequelize db:create 명령어를 입력하면 데이터베이스가 생성됨.
+        - 콘솔에서 npx sequelize db:create : 명령어를 입력하면 데이터베이스가 생성됨.
         - 시퀄라이즈는 생성문 쿼리에 IF NOT EXISTS 를 자동으로 넣어주므로 테이블이 없을 때만 자동으로 생성됨.
 
 3. 로그인 구현(Passport 모듈)
