@@ -203,3 +203,93 @@ const store = createStore(rootReducer, applyMiddleware(logger));
         ```
 
 2.  reudx-saga : redux-thunk 다음으로 가장 많이 사용되는 비동기 작업 관련 미들웨어 라이브러리. 특정 액션이 디스패치되었을 때 정해진 로직에 따라 다른 액션을 디스패치시키는 규칙을 작성하여 비동기 작업을 처리할 수 있게 해 줌
+
+    -   다음과 같은 까다로운 상황에서는 redux-saga를 사용하는 것이 유리함
+        -   기존 요청을 취소 처리해야 할 때(불필요한 중복 요청 방지)
+        -   특정 액션이 발생했을 때 다른 액션을 발생시키거나, API 요청 등 리덕스와 관계없는 코드를 실행할 때
+        -   웹소켓을 사용할 때
+        -   API 요청 실패 시 재요청해야 할 때
+
+    ### 제너레이터 함수
+
+    -   함수에서 값을 순차적으로 반환할 수 있게 해주고 함수의 흐름을 도중에 멈춰 놓았다가 다시 이어서 진행시킬 수 있는 함수
+    -   제너레이터 함수를 만들 때는 function\* 키워드를 사용함
+
+    ```js
+    function* generatorFunction() {
+        console.log('안녕하세요');
+        yield 1;
+        console.log('제너레이터 함수');
+        yield 2;
+        console.log('function*');
+        yield 3;
+        return 4;
+    }
+    ```
+
+    -   제너레이터 함수를 호출했을 때 반환되는 객체를 제너레이터라고 부름
+
+    ```js
+    const generator = generatorFunction();
+    ```
+
+    -   제너레이터가 처음 만들어지면 함수의 흐름은 멈춰 있는 상태. next()가 호출되면 다음 yield가 있는 곳까지 호출하고 다시 함수가 멈춤.
+    -   next 함수에 파라미터를 넣으면 제너레이터 함수에서 yield를 사용하여 해당 값을 조회할 수도 있음
+
+    ```js
+    function* sumGenerator() {
+        console.log('sumGenerator가 만들어졌습니다');
+        let a = yield;
+        let b = yield;
+        yield a + b;
+    }
+    const sum = sumGenerator();
+    sum.next(); // sumGenerator가 만들어졌습니다. {value : undefined, done : false}
+    sum.next(1); // {value : undefined, dont : false}
+    sum.next(2); // {value : 3, done : true}
+    sum.next(); // {value : undefined, done : true}
+    ```
+
+    ### 비동기 카운터 만들기
+
+    1. `yarn add redux-saga`로 라이브러리 설치
+    2. 리덕스 모듈을 열어서 기존 thunk 함수를 제거하고 \_ASYNC 라는 액션 타입을 선언하고 해당 액션에 대한 액션 생성 함수를 만들고 제너레이터 함수 만들기(사가라고 부름)
+    3. 루트 리듀서처럼 루트 사가를 만들어 줌
+    4. 스토어에 redux-saga 미들웨어를 적용
+
+    ```js
+    // index.js
+    import CreateSagaMiddleware from 'redux-saga';
+    const sagaMiddleware = createSagaMiddleware();
+    const store = createStore(
+        rootReducer,
+        applyMiddleware(logger, ReduxThunk, sagaMiddleware),
+    );
+    sagaMiddleware.run(rootSaga);
+    ```
+
+    ### API 요청 상태 관리하기
+
+    1. sample 리덕스 모듈 수정하기
+    2. sampleSaga를 루트 사가에 등록
+
+    ### 알아 두면 유용햔 기능
+
+    1. 사가 내부에서 현재 상태를 조회하는 방법
+
+    ```js
+    import { select } from 'redux-saga/effects';
+    function* increaseSaga() {
+        const number = yield select(state => state.counter); // state는 스토어 상태를 의미함
+    }
+    ```
+
+    2. 사가가 실행되는 주기를 제한하는 방법
+
+    ```js
+    import { throttle } from 'redux-saga/effects';
+    export function* counterSaga() {
+        // 첫 번째 파라미터 : n초 * 1000
+        yield throttle(3000, INCREASE_ASYNC, increaseSaga);
+    }
+    ```
