@@ -2,7 +2,7 @@ import { startLoading, finishLoading } from '../modules/loading';
 
 export default function createRequestThunk(type, request) {
     // 성공 및 실패 액션 타입을 정의
-    const SUCCSESS = `${type}_SUCCESS`;
+    const SUCCESS = `${type}_SUCCESS`;
     const FAILURE = `${type}_FAILURE`;
     return params => async dispatch => {
         dispatch({ type }); // 시작됨
@@ -10,7 +10,7 @@ export default function createRequestThunk(type, request) {
         try {
             const response = await request(params);
             dispatch({
-                type: SUCCSESS,
+                type: SUCCESS,
                 payload: response.data,
             });
             dispatch(finishLoading(type));

@@ -80,6 +80,17 @@
 - stretch : 여러 줄들을 컨테이너에 맞도록 늘림
   ※ align-content는 여러 줄들 사이의 간격, align-items는 컨테이너 안에서 어떻게 모든 요소들이 정렬하는지를 지정
 
+  ### flex-grow(Flex Item의 증가 너비 비율을 설정)
+  
+  - 총 너비 중 해당 아이템의 너비 비율을 설정 총 너비가 400px이고 각 아이템이 flex-grow:1, flex-grow:2, flex-grow:1 이면 각각 너비가 100px, 200px, 100px이 된다
+
+  ### flex-shrink(Flex Item의 감소 너비 비율을 설정)
+
+  ### flex-basis(Flex Item의 공간 배분 전 기본 너비 설정)
+  
+  - 값이 auto일 경우 width, height 등의 속성으로 Item의 너비를 설정할 수 있음. 숫자를 입력하면 해당 공간이 기본 너비로 설정됨
+
+
 # 성능 최적화
 
 ## 느려지는 원인 분석
