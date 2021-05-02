@@ -231,3 +231,140 @@ ctx.body = posts.map(post => ({
   body: post.body.length < 200 ? post.body : `${post.body.slice(0, 200)}...`,
 }));
 ```
+
+## JWT (JSON Web Token)
+
+### 세션 기반 인증과 토큰 기반 인증의 차이
+
+- 세션 기반 : 로그인 하면 서버가 세션 저장소에 사용자의 정보를 조회하고 세션 id를 발급. 발급된 id는 주로 브라우저의 쿠키에 저장. 서버를 확장하기가 번거로움
+- 토큰 기반 : 토큰은 로그인 이후 서버가 만들어 주는 사용자의 로그인 정보와 해당 보가 서버에서 발급되었음을 증명하는 서명이 들어 있는 문자열. 서버에서 사용자 로그인 정보를 기억하기 위해 사용하는 리소스가 적다는 장점이 있음.
+
+### 모델 만들기
+
+- `yarn add bcrypt` 설치
+- 모델 메서드 만들기(모델에서 사용할 수 있는 함수를 의미)
+
+  1. 인스턴스 메서드 : 모델을 통해 만든 문서 인스턴스에서 사용할 수 있는 함수를 의미
+
+  ```js
+  const user = new User({ username: 'cgs' });
+  user.setPassword('password');
+  ```
+
+  2. 스태틱 메서드 : 모델에서 바로 사용할 수 있는 함수
+
+  ```js
+  const user = User.findByusername('cgs');
+  ```
+
+- 토큰 발급 및 검증하기
+
+  1. `yarn add jsonwebtoken` 모듈 설치
+  2. .env 파일에 JWT 토큰을 만들 때 사용할 비밀키 만들기 (비밀키는 아무 문자열이나 사용해도 됨)
+  3. user 모델 파일에서 토큰 발급하는 인스턴스 메서드 만들기
+
+  ```js
+  const token = jwt.sign(
+    // 첫 번쨰 파라미터에는 토큰 안에 집어넣고 싶은 데이터
+    {
+      _id : this.id,
+      username : this.username,
+    },
+    process.env.JWT_SECRET,  // 두 번째 파라미터는 JWT 암호
+    , {
+      expiresIn : '7d', // 7일 동안 유효함
+    }
+  );
+  ```
+
+  4. 토큰 사용 방법 두 가지
+
+  - 브라우저의 localStorage 혹은 sessionStorage에 담아서 사용하는 방법 : 사용하기 편하고 구현하기도 쉬움. XSS(cross Site Scripting) 공격에 취약
+  - 브라우저의 쿠키에 담아서 사용하는 방법 : XSS 공격에 당할 수 있지만 httpOnly라는 속성을 활성화해 js를 통해 쿠키를 조회할 수 없게 하면 괜찮지만 CSRF(Cross Site Request Forgery : 토큰을 쿠키에 담으면 사용자가 서버로 요청을 할 떄마다 무조건 토큰이 함께 전달되는 점을 이용해 사용자가 모르게 원하지 않는 API를 요청하게 만드는 공격)에 취약
+  - CSRF는 CSRF 토큰 사용 및 Referer 검증 등의 방식으로 제대로 막을 수 있지만 XSS는 보안장치를 적용해 놓아도 개발자가 놓칠 수 있는 다양한 취약점을 통해 공격을 받을 수 있음
+
+  5. register와 login함수에서 토큰 발급하기
+
+  ```js
+  export const register = async ctx => {
+    (...)
+    ctx.body = user.serialize();
+
+    cosnt token = user.generateToken();
+    ctx.cookies.set('access_token', token, {
+      maxAge : 1000 * 60 * 60 * 24 * 7, // 7일
+      httpOnly : true,
+    });
+  }
+  ```
+
+  6. 토큰 검증 미들웨어 만들기
+
+  ```js
+  const jsonMiddleware = (ctx, next) => {
+    // app에 router 미들웨어를 적용하기 전에 위치해야 함
+    const token = ctx.cookies.get('access_token');
+    if (!token) return next(); // 토큰이 없음
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      ctx.state.user = {
+        _id: decoded._id,
+        username: decoded.username,
+      }; // 토큰 정보를 다음에 사용하기 위해 저장
+      return next();
+    }
+  };
+  ```
+
+  7. 토큰이 만료되기 전에 재발급하는 기능 만들기
+
+  ```js
+  const jwtMiddleware = async (ctx, next) => {
+    (...)
+    const now = Math.floor(Date.now() / 1000);
+    if (decoded.exp - now < 60 * 60 * 24 *3.5) {
+      const user = await User.findById(decoded._id);
+      const token = user.generateToken();
+      ctx.cookies.set('access_token', token, {
+        maxAge : 1000 * 60 * 60 * 24 * 7,
+        httpOnly : true,
+      })
+    }
+  }
+  ```
+
+- 로그아웃 기능 구현 : 쿠키를 지워 주기만 하면 됨
+  ```js
+  export const logout = async ctx => {
+    ctx.cookies.set('access_token');
+    ctx.status = 204; // No Content
+  };
+  ```
+
+### posts API에 회원 인증 시스템 도입하기
+
+1. 스키마 수정하기
+
+```js
+// RDBMS에서는 데이터의 id만 관계 있는 데이터에 넣어 주는 반면, MongoDB에서는 필요한 데이터를 통째로 집어넣음
+const PostSchema = new Schema({
+  (...)
+  user : {
+    _id : mongoose.Types.ObjectId,
+    username : String,
+  }
+})
+```
+
+2. 로그인했을 때만 API를 사용할 수 있게 하기
+
+```js
+// checkLoggedIn이라는 미들웨어를 만들어 로그인해야만 글쓰기, 수정, 삭제를 할 수 있도록 ㅜ현
+const checkLoggedIn = (ctx, next) => {
+  if (!ctx.state.user) {
+    ctx.status = 401; // Unauthorized
+    return;
+  }
+  return next();
+};
+```
