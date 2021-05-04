@@ -68,3 +68,40 @@
 
 -   `yarn add quill`로 설치
 -   일반 input태그나 textarea가 아니기 때문에 onChange와 value 값을 사용하여 상태를 관리할 수 없음/.
+-   HTML 필터링은 백엔드에서 sanitize-html 라이브러리
+
+## HTTP 헤더 조회
+
+-   api 호출시 response로 담겨 오는 meta데이터를 dispatch할 때 같이 전달
+
+```js
+const response = yield call(request, action.payload);
+yield put({
+    type : SUCCESS,
+    payload : response.data,
+    meta : response
+});
+```
+
+-   원하는 헤더 값을 action에서 받아서 사용
+
+```js
+[SUCCESS] : (state, { payload, meta : response }) => ({
+    ...state,
+    posts,
+    lastPage : parseInt(response.header['last-page'], 10),
+})
+```
+
+## 컴포넌트의 props값을 전달 전달 해야하는 경우
+
+-   jsx를 props로 전달하여 처리할 수도 있음
+
+```js
+// 호출
+actionButtons={<PostActionButtons onEdit={onEdit}>}
+// 컴포넌트
+const Sample = () => {
+    {PostActionButtons}
+}
+```

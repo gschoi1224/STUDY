@@ -12,6 +12,7 @@ export default function createRequestSaga(type, request) {
             yield put({
                 type: SUCCESS,
                 payload: response.data,
+                meta: response,
             });
         } catch (e) {
             yield put({
@@ -24,7 +25,7 @@ export default function createRequestSaga(type, request) {
     };
 }
 
-export const createRequestActionTypes = (type) => {
+export const createRequestActionTypes = type => {
     const SUCCESS = `${type}_SUCCESS`;
     const FAILURE = `${type}_FAILURE`;
     return [type, SUCCESS, FAILURE];
