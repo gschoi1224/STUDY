@@ -368,3 +368,26 @@ const checkLoggedIn = (ctx, next) => {
   return next();
 };
 ```
+
+## React와 연동
+
+1. React 프로젝트 빌드하기
+2. `yarn add koa-static` 라이브러리(정적 파일 제공) 설치
+3. main.js 수정
+
+```js
+import serve from 'koa-static';
+import path from 'path';
+import send from 'koa-send';
+// 모든 라우터 마지막에 위치 해야함
+(...)
+const buildDirectory = path.resolve(__dirname, '../../blog-frontend/build');
+app.use(serve(buildDirectory));
+app.use(async ctx => {
+  // Not Found이고, 주소가 /api로 시작하지 않는 경우
+  if (ctx.status === 404 && ctx.path.indexOf('/api') !== 0) {
+    // index.html 내용을 반환
+    await send(ctx, 'index.html', { root : buildDirectory });
+  }
+})
+```
