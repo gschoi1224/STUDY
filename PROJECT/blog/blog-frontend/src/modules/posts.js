@@ -33,6 +33,7 @@ const posts = handleActions(
             ...state,
             posts,
             lastPage: parseInt(response.headers['last-page'], 10),
+            error: null,
         }),
         [LIST_POSTS_FAILURE]: (state, { payload: error }) => ({
             ...state,

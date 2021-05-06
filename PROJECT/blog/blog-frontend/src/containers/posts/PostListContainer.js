@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PostList from '../../components/post/PostList';
 import { listPosts } from '../../modules/posts';
+import { usePreloader } from '../../lib/PreloadContext';
 
 const PostListContainer = ({ location, match }) => {
     const dispatch = useDispatch();
@@ -16,22 +17,31 @@ const PostListContainer = ({ location, match }) => {
         }),
     );
 
-    useEffect(() => {
-        const { username } = match.params;
+    usePreloader(() => {
+        const username = match.params;
         const { tag, page } = qs.parse(location.search, {
             ignoreQueryPrefix: true,
         });
-        console.log(username);
+        dispatch(listPosts({ tag, username, page }));
+    });
+
+    useEffect(() => {
+        const username = match.params;
+        const { tag, page } = qs.parse(location.search, {
+            ignoreQueryPrefix: true,
+        });
         dispatch(listPosts({ tag, username, page }));
     }, [dispatch, location.search, match.params]);
 
     return (
-        <PostList
-            loading={loading}
-            error={error}
-            posts={posts}
-            showWriteButton={user}
-        />
+        <>
+            <PostList
+                loading={loading}
+                error={error}
+                posts={posts}
+                showWriteButton={user}
+            />
+        </>
     );
 };
 

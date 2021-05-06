@@ -193,3 +193,114 @@ const MouseOver = () => {
 ### 구현하기
 
 1. 웹팩 설정 커스터마이징해야하므로 `yarn eject` 시행
+2. 서버 사이드 렌더링용 엔트리 만들기
+
+```js
+// src 디렉터리에 index.server.js 파일 생성
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+
+const html = ReactDOMServer.renderToString(
+    <div>Hello Server Side Rendering!</div>,
+); // 서버에서 리액트 컴포넌트를 렌더링할 때는 ReactDOMServer의 renderToString이라는 함수에 JSX를 넣어서 호출
+```
+
+3. 웹팩 환경 설정 작성
+
+```js
+// config/paths.js
+module.exports = {
+    (...)
+    ssrIndexJS : resolveApp('src/index.server.js'); // 서버 사이드 렌더링 엔트리
+    ssrBuild : resolveApp('dist');  // 웹팩 처리 후 저장 경로
+}
+// config 디렉터리에 webpack.config.server.js 파일 생성
+(...)
+```
+
+-   이렇게 하면 react, react-dom/server와 같은 라이브러리를 import 구문으로 불러오면 node_modules에서 찾아 사용함. 라이브러리를 불러오면 빌드할 때 결과물 파일 안에 해당 라이브러리 관련 코드가 함께 번들링 됨.
+-   서버에서는 굳이 결과물 파일 안에 리액트 라이브러리가 들어 있지 않아도 됨.(node_modules를 통해 바로 불러와서 사용하기 때문)
+-   따라서 서버를 위해 번들링할 때는 node_modules에서 불러오는 것을 제외하고 번들링하는 것이 좋음
+
+4. `yarn add webpack-node-externals` 라이브러리 설치 후 webpack.config.server.js 상단에 불러와 설정에 적용
+
+5. 환경변수를 주입해 프로젝트 내에서 process.env.NODE_ENV 값을 참조해 현재 개발 환경인지 아닌지 알 수 있게 해 줌
+6. 빌드 스크립트 작성하기 (script/build.server.js)
+7. $ node script/build.server.js 실행
+8. $ node dist/server.js
+
+9. 서버 사이드 렌더링을 처리할 서버 작성 `yarn add express`
+10. index.server.js에 express를 사용하여 App.js를 렌더링하도록 작성
+11. js와 css 파일을 asset-manifest.json 파일을 참고하여 불러오도록 html에 코드 삽입
+
+### 데이터 로딩 처리 방법
+
+1. PreloadContext 만들기
+    - SSR을 할 때는 useEffect나 componentDidMount에서 설정한 작업이 호출되지 않기 때문에 렌더링하기 전에 API를 요청한 뒤 스토어에 데이터를 담아야 함
+2. 서버에서 리덕스 설정 및 PreloadContext 사용하기
+
+## SSR과 코드 스플리팅
+
+1. `yarn add @loadable/component @loadable/server @loadable/webpack-plugin @loadable/babel-plugin
+2. 라우트 컴포넌트 스플리팅
+
+```js
+import Page = loadable(() => import('./Page'));
+const App = () => {
+    return (
+        <Route path='/page' component={Page} />
+    )
+}
+```
+
+3. 깜빡임 현상 방지를 위해 웹팩과 babel 플러그인 적용 -> build/loadable-stats.json에 각 컴포넌트의 코드가 어떤 청크 파일에 들어가 있는지에 대한 정보를 가진 파일 생김
+
+```json
+// package.json
+"babel" : {
+    "preset" : [
+        "react-app"
+    ],
+    "plugins" : [
+        "@loadable/babel-plugin"
+    ]
+} //
+```
+
+```js
+const loadablePlugin = require('@loadable/webpack-plugin');
+(...)
+plugins : [
+    new loadablePlugin(),
+    new HTMLWebpackPlugin()
+].filter(Boolean),
+(...)
+```
+
+4. 필요한 청크 파일 경로 추출하기
+
+```js
+// index.server.js
+import { ChunkExtractor, ChunkExtractorManager } from '@loadable/server';
+const statsFile = path.resolve('./build/loadable-stats.json');
+
+const serverRender = async (req, res, next) => {
+    const extractor = new ChunkExtractor({ statisFile });
+    const jsx = (
+        <ChunkExtractorManager extractor={extractor}>
+            (...)
+        </ChunkExtractorManager>
+    );
+
+    // 미리 불러와야 하는 스타일/스크립트 추출
+    const tags = {
+        scripts: stateScript + extractor.getScriptTags(), // 스크립트 앞부분에 리덕스 상태 넣기
+        links: extractor.getLinkTags(),
+        styles: extractor.getStyleTags(),
+    };
+
+    res.send(createPage(root, tags));
+};
+```
+
+5. 모든 스크립트가 로디오디고 나서 렌더링하도록 처리하기 위해서는 loadableReady라는 함수를 사용해 주어야 함. render 함수 대신에 hydrate 함수 사용. 이 함수는 기존에 서버 사이드 렌더링된 결과물이 이미 있을 경우 새로 렌더링하지 않고 기존에 존재하는 UI에 이어 이벤트만 연동하여 앱을 초기 구동할 때 필요한 리소스를 최소화함.

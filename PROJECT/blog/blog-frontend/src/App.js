@@ -1,19 +1,23 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Route } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import PostListPage from './pages/PostListPage';
-import PostPage from './pages/PostPage';
-import RegisterPage from './pages/RegisterPage';
-import WritePage from './pages/WritePage';
+import loadable from '@loadable/component';
+
+const LoginPage = loadable(() => import('./pages/LoginPage'));
+const PostListPage = loadable(() => import('./pages/PostListPage'));
+const PostPage = loadable(() => import('./pages/PostPage'));
+const RegisterPage = loadable(() => import('./pages/RegisterPage'));
+const WritePage = loadable(() => import('./pages/WritePage'));
 
 const App = () => {
     return (
         <>
-            <Helmet>
-                <title>REACTERS</title>
-            </Helmet>
-            <Route component={PostListPage} path={['/@:username', '/']} exact />
+            <Route
+                path={['/@:username', '/']}
+                exact
+                render={({ match }) => (
+                    <PostListPage username={match.params.username} />
+                )}
+            />
             <Route component={LoginPage} path='/login' />
             <Route component={RegisterPage} path='/register' />
             <Route component={WritePage} path='/write' />
