@@ -18,53 +18,43 @@ for _ in range(l) :
     t, d = input().split()
     rotate.append((int(t), d)) # L : 왼쪽, D : 오른쪽 회전
 
-time = 0
-apple = 0
-x, y = 0, 0
-dy = [1, 0, -1, 0]
-dx = [0, 1, 0, -1]
-d = 0
-r = 0
-body = []
-
 def rotation(now, d) :
-    if now + d > 3 :
-        now = 0
-    elif now + d < 0 :
-        now = 3
-    else :
-        now += d
-    return now
+    return (now + d) % 4
 
-while True :
-    time += 1
-    if r < len(rotate) and rotate[r][0] == time :
-        if rotate[r][1] == 'D' :
-            d = rotation(d, 1)
-        elif rotate[r][1] == 'L' :
-            d = rotation(d, -1)
-        print(rotate[r][1], 'rotate!')
-        r += 1
-    for i in range(len(body) - 1, -1, -1) :
-        dummy[body[i][0]][body[i][1]] += 1
-        if i == 0 :
-            body[i] = (x, y)
+def solution() :
+
+    time = 0
+    x, y = 1, 1
+    dy = [1, 0, -1, 0]
+    dx = [0, 1, 0, -1]
+    d = 0
+    r = 0
+    body = [(x, y)]
+
+    while True :
+        time += 1
+
+        nx = x + dx[d]
+        ny = y + dy[d]
+        if nx < 1 or nx > n or ny < 1 or ny > n or dummy[nx][ny] == 2:
+            break
+        if dummy[nx][ny] == 1 :
+            dummy[nx][ny] = 2
+            body.append((nx, ny))
         else :
-            body[i] = (body[i - 1][0], body[i - 1][1])
-        dummy[body[i][0]][body[i][1]] -= 1
-
-    x += dx[d]
-    y += dy[d]
-    print(x, y)
-    if x < 0 or x > n or y < 0 or y > n or apple == k or dummy[x][y] == -1:
-        break
-    if apple == k :
-        break
-    if dummy[x][y] == 1 :
-        print('apple!')
-        apple += 1
-        body.append((x, y))
-        dummy[x][y] = 0
+            dummy[nx][ny] = 2
+            body.append((nx, ny))
+            px, py = body.pop(0)
+            dummy[px][py] = 0
+        x, y = nx, ny
+        if r < len(rotate) and rotate[r][0] == time :
+            if rotate[r][1] == 'D' :
+                d = rotation(d, 1)
+            elif rotate[r][1] == 'L' :
+                d = rotation(d, -1)
+            r += 1
+    return time
+print(solution())
 
 
-print(time)
+
