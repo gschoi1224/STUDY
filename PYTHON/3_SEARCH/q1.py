@@ -1,33 +1,36 @@
 # 문제 : P.340
 # 풀이 : P.531
 from collections import deque
+import sys
+input = sys.stdin.readline
+
 n, m, k, x = map(int, input().split())
 data = [[] * i for i in range(n + 1)]
 for _ in range(m) :
     a, b = map(int, input().split())
-    data[a].append((b, 1))
+    data[a].append((b))
 
-visited = [False] * (n + 1)
-INF = int(1e9)
-dp = [INF] * (n + 1)
-def bfs(array, start) :
+dp = [-1] * (n + 1)
+def bfs(start) :
     q = deque()
-    q.append((start, 0))
-    visited[start] = True
     dp[start] = 0
+    q.append(start)
     while q : 
-        now, cost = q.popleft()
-        for i, d in array[now] :
-            visited[i] = True # 방문 처리
-            # 비용 계산
-            dp[i] = min(cost + d, dp[i])
-            q.append((i, dp[i]))
+        now = q.popleft()
+        for i in data[now] :
+            if dp[i] == -1 :
+                # 비용 계산
+                dp[i] = (dp[now] + 1)
+                q.append(i)
 
-bfs(data, x)
-if dp.count(k) == 0 : print(-1)
-else :
-    for i in range(1, len(dp)) :
-        if dp[i] == k : print(i)
+bfs(x)
+flag = False
+for i in range(1, len(dp)) :
+    if dp[i] == k : 
+        print(i)
+        flag = True
+if not flag :
+    print(-1)
 
 
 # 풀이
