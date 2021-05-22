@@ -36,6 +36,11 @@
 # 최소한의 비용으로 2개의 신장 트리로 분할하는 것이 핵심
 # 가장 간단한 방법은 크루스칼 알고리즘으로 최소 신장 트리를 찾은 뒤에 최소 신장 트리를 구성하는 간선 중에서 가장 비용이 큰 간선을 제거하는 것.
 
+import heapq
+import sys
+
+input = sys.stdin.readline
+
 # 답안 예시
 def find_parent(parent, x) :
     if parent[x] != x :
@@ -51,22 +56,19 @@ def union_parent(parent, a, b) :
         parent[a] = b
 
 v, e = map(int, input().split())
-parent = [0] * (v + 1)
+parent = [i for i in range(v + 1)]
 
 edges = []
 result = 0
 
-for i in range(1, v + 1) :
-    parent[i] = i
-
 for _ in range(e) :
     a, b, cost = map(int, input().split())
-    edges.append((cost, a, b))
+    heapq.heappush(edges, (cost,a,b))
 
-edges.sort()
 last = 0    # 최소 신장 트리에 포함되는 간선 중에서 가장 비용이 큰 간선
 
-for edge in edges : 
+while edges :
+    edge = heapq.heappop(edges)
     cost, a, b = edge
     if find_parent(parent, a) != find_parent(parent, b) :
         union_parent(parent, a, b)
