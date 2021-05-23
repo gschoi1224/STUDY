@@ -35,8 +35,6 @@ while q :
                 graph[nx][ny] = virus
                 q.append((virus, s + 1, nx, ny))
 
-print(data)
-print(graph)
 print(graph[tx-1][ty-1])
 
         
