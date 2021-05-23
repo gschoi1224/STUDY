@@ -78,11 +78,9 @@ for i in range(n) :
 
 # 특정 방향으로 감시를 진행(학생 발견 : True, 학생 미발견 : False)
 def watch (x, y, direction) :
-    print('검사', x, y, direction)
     # 왼쪽 방향으로 감시
     if direction == 0 : 
         while y >= 0 :
-            print(board[x][y])
             if board[x][y] == 'S' : # 학생이 있는 경우
                 return True
             if board[x][y] == 'O' : # 장애물이 있는 경우
@@ -133,7 +131,6 @@ for data in list(combinations(spaces, 3)) :
         board[x][y] = 'O'
     # 학생이 한 명도 감지되지 않는 경우
     result = process()
-    print(data, result)
     if not result :
         # 원하는 경우를 발견한 것임
         find = True
