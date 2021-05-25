@@ -2,6 +2,7 @@
 # 풀이 : P.543
 
 import sys
+from collections import deque
 input = sys.stdin.readline
 
 n, l, r = map(int, input().split())
@@ -10,36 +11,39 @@ for _ in range(n) :
     data.append(list(map(int, input().split())))
 
 result = 0
-visited = [[0] * n for _ in range(n)]
-def unionCheck(x, y, direction, num) :
-    if direction == 0 : # 왼쪽 탐색
-        while y > 0 :
-            if l <= abs(data[x][y] - data[x][y-1]) <= r and visited[x][y-1] != 0:
-                y -= 1
-                visited[x][y] = num
-            else :
-                return False
-    elif direction == 1 : # 오른쪽 탐색
-        while y < n - 1 :
-            if l <= abs(data[x][y] - data[x][y+1]) <= r and visited[x][y-1] != 0:
-                y += 1
-                visited[x][y] = num
-            else :
-                return False
-    elif direction == 2 : # 위쪽 탐색
-        while x > 0 :
-            if l <= abs(data[x][y] - data[x-1][y]) <= r and visited[x-1][y] != 0:
-                x -= 1
-                visited[x][y] = num
-            else :
-                return False
-    elif direction == 3 : # 아래쪽 탐색
-        while x < n - 1 :
-            if l <= abs(data[x][y] - data[x+1][y]) <= r and visited[x+1][y] != 0 :
-                x += 1
-                visited[x][y] = num
-            else :
-                return False
-
+visited = []
+def unionCheck(x, y, num) :
+    dx = [-1, 1, 0, 0]
+    dy = [0, 0, -1, 1]
+    q = deque()
+    q.append((x, y))
+    count = 1
+    summary = data[x][y]
+    united = []
+    while q :
+        x, y = q.popleft()
+        for i in range(4) :
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx >= 0 and ny >= 0 and nx < n and ny < n and visited[nx][ny] == -1 and l <= abs(data[x][y] - data[nx][ny]) <= r:
+                visited[nx][ny] = num
+                q.append((nx, ny))
+                count += 1
+                summary += data[nx][ny]
+                united.append((nx, ny))
+    for x, y in united :
+        data[x][y] = summary // count
 while True :
-    visited
+    visited = [[-1] * n for _ in range(n)]
+    num = 0
+    for x in range(n) :
+        for y in range(n) :
+            if visited[x][y] == -1 :
+                unionCheck(x, y, num)
+                num += 1
+    if num == n * n :
+        break
+    result += 1
+print(result)
+
+
