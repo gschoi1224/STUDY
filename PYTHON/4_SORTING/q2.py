@@ -13,3 +13,9 @@ for h in house :
         min_val = min(min_val, sum)
         result = h
 print(result)
+
+# 그냥 중간값 출력하면 정답
+n = int(input())
+data = list(map(int, input().split()))
+data.sort()
+print(data[(n - 1) // 2])
