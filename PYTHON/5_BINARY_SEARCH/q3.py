@@ -20,10 +20,10 @@ while(start <= end) :
         if array[i] >= value + mid :
             value = array[i]
             count += 1
-        if count >= c : # c개 이상의 공유기를 설치할 수 있는 경우, 거리를 증가
-            start = mid + 1
-            result = mid # 최적의 결과를 저장
-        else : # C 개 이상의 공유기를 설치할 수 있는 경우, 거리를 감소
-            end = mid - 1
+    if count >= c : # c개 이상의 공유기를 설치할 수 있는 경우, 거리를 증가
+        start = mid + 1
+        result = mid # 최적의 결과를 저장
+    else : # C 개 이상의 공유기를 설치할 수 있는 경우, 거리를 감소
+        end = mid - 1
 print(result)
 
