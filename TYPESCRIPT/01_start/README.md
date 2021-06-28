@@ -41,3 +41,49 @@
 ```
 
 -   `npm run 명령` 형태로 사용
+
+## ts.config
+
+### module 키
+
+-   타입스크립트 소스코드가 컴파일되어 만들어진 ES5 자바스크립트 코드는 웹 브라우저와 노드제이에스 양쪽에서 모두 동작해야 함.
+-   웹 브라우저에서는 AMD방식, 노드제이에스에서는 CommonJS 방식으로 동작함.
+-   tsconfig.ts 파일에서 compilerOptions 항목의 module 키는 동작 대상 플랫폼이 웹 브라우저인지 노드제이에스인지를 구분해 그에 맞는 모듈 방식으로 컴파일하려는 목적으로 설정함.
+
+### moduleResolution 키
+
+-   module의 키 값이 commonjs이면 노드제이에서 동작하는 것을 의미하므로, moduleResolution 키값은 항상 node로 설정.
+-   amd이면 classic으로 설정.
+
+### target 키
+
+-   트랜스파일할 대상 자바스크립트의 버전을 설정.
+-   대부분 es5를 키값으로 설정함. 만일 최신 버전의 노드제이에스를 사용한다면 es6으로 설정.
+
+### baseUrl과 outDir 키
+
+-   트랜스파일된 ES5 자바스크립트 파일을 저장하는 디렉터리를 설정.
+-   baseUrl : tsconfig.ts가 있는 디렉터리에서 실행되므로 현재 디렉터리를 의미하는 "."으로 설정
+-   OutDir : baseDir 설정값을 기준으로 했을 때 하위 디렉터리의 이름. 이 키는 dist라는 값을 설정했으므로 빌드된 결과가 dist 디렉터리에 만들어짐.
+
+### paths 키
+
+-   소스 파일의 import 문에서 from 부분을 해석할 때 찾아야 하는 디렉터리를 설정.
+-   import 문이 찾아야 하는 소스가 외부 패키지이면 node_modules 디렉터리에서 찾아야 하므로 키값에 node_modules/\*도 포함
+
+### esModuleInterop 키
+
+-   오픈소스 js 라이브러리 중에 웹 브라우저에서 동작한다는 가정으로 만들어진 것이 있는데 이들은 commonJS 방식으로 동작하는 타입스크립트 코드에 혼란을 줄 수 있으므로 esModuleInterop 키값을 반드시 true로 설정해야 함
+
+### sourceMap 키
+
+-   ture이면 트랜스파일 디렉터리에는 .js파일 외에도 .js.map 파일이 만들어짐.
+-   이 파일은 변환된 js 코드가 ts 코드의 어디에 해당하는지를 알려줌.
+
+### downlevelIteration 키
+
+-   생성기 구문을 사용할 때 반드시 true로 설정
+
+### nolmplicitAny 키
+
+-   f(a, b)의 경우 f(a: any, b:any) 암시적으로 any 타입을 설정한 것으로 간주하지만 에러가 발생해서 혼란을 야기하기 때문에 false로 설정하면 에러가 발생하지 않음.
