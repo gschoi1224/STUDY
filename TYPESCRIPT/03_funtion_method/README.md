@@ -124,3 +124,116 @@ let value = functionExpression(1, 2); // 3
 
 -   함수 표현식을 담는 변수는 let 보다는 const 키워드로 선언하는 것이 바람직함.
 -   let 키워드는 변숫값이 변할 수 있으나 const 키워드로 선언하면 함수 내용이 이후에 절대 바뀔 수 없기 때문에
+
+## 일등 함수
+
+### 콜백 함수
+
+-   일등 함수 기능을 제공하는 언어에서 함수는 `함수 표현식`이라는 일종의 값이고 변수에 담을 수 있다.
+-   매개변수 형태로 동작하는 함수를 콜백함수라고 한다.
+
+```ts
+export const init = (callback: () => void): void => {
+    console.log('default initialization finished.');
+    callback();
+    console.log('all initialization finished');
+};
+import { init } from './init';
+init(() => console.log('custom initialization finished'));
+
+// default initialization finished.
+// custom initialization finished.
+// all initialization finished.
+```
+
+### 중첩 함수
+
+```ts
+const calc = (value : number, cb : (number) => void) : void => {
+    let add = (a, b) => a + b
+    function multiply(a, b) {return a * b}
+
+    let result = multiplay(add(1, 2), value)
+    cb(result)
+}
+calc(30, (result : number)) => console.log(`result is ${result}`) // result is 90
+```
+
+### 고차 함수와 클로저, 그리고 부분 함수
+
+-   고차 함수의 일반적인 형태
+
+```ts
+const add1 = (a: number, b: number): number => a + b; // 보통 함수
+const add2 =
+    (a: number): ((number) => number) =>
+    (b: number): number =>
+        a + b;
+```
+
+-   예시
+
+```ts
+type NumberToNumberFunc = (number) => number;
+export const add = (a: number): NumberToNumberFunc => {
+    const _add: NumberToNumberFunc = (b: number): number => {
+        return a + b; // 클로저
+    };
+    return _add;
+};
+```
+
+```ts
+import { NumberToNumberFunc, add } from './add';
+let fn: NumberToNumberFunc = add(1);
+
+let result = fn(2);
+conosle.log(result); // 3
+console.log(add(1)(2)); // 3
+```
+
+## 함수 구현 기법
+
+### 매개변수 기본값 지정하기
+
+-   매개변수 : 타입 = 매개변수 기본값
+
+```ts
+export type Person = { name: string; age: number };
+export const makePerson = (name: stringm, age: number = 10): Person => {
+    const person = { name: name, age: age };
+    return person;
+};
+console.log(makePerson('Jack')); // {name : 'Jack', age : 10}
+console.log(makePerson('Jane', 33)); // {name : 'Jane', age : 33}
+```
+
+### 객체를 반환하는 화살표 함수 만들기
+
+```ts
+export const makePerson = (name: string, age: number = 10): Person => {
+    name, age;
+}; // 중괄호를 객체가 아닌 복합 실행문으로 해석
+export const makePerson = (name: string, age: number = 10): Person => ({
+    name,
+    age,
+});
+```
+
+### 색인 키와 값으로 객체 만들기
+
+-   (key, value) => ({[key] : value}) : 색인 기능 타입
+
+```ts
+const makeObject = (key, value) => ({ [key]: value });
+console.log(makeObject('name', 'Jack')); // {name : 'Jack'}
+console.log(makeObject('firstName', 'Jane')); // {firstName : 'Jane'}
+```
+
+-   타입스크립트에서 key와 value의 타입을 명시함
+
+```ts
+type KeyType = {
+    [key: string]: string;
+};
+```
