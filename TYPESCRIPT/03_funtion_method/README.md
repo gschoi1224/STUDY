@@ -237,3 +237,57 @@ type KeyType = {
     [key: string]: string;
 };
 ```
+
+## 클래스 메서드
+
+### 메서드
+
+-   function으로 만든 함수 표현식을 담고 있는 속성
+
+```ts
+export class A {
+    value: number = 1;
+    method: () => void = function (): void {
+        console.log(`value : ${value}`);
+    };
+}
+```
+
+### 클래스 메서드 구문
+
+-   타입스크립트는 클래스 속성 중 함수 표현식을 담는 속성은 function 키워드를 생략할 수 있게 하는 단축 구문을 제공함
+
+```ts
+export class B {
+    constructor(public value: number = 1) {}
+    method(): void {
+        console.log(`value: ${value}`);
+    }
+}
+```
+
+### 메서드 체인
+
+-   객체의 메서드를 이어서 계속 호출하는 방식의 코드
+-   타입스크립트로 메서드 체인을 구현하려면 메서드가 항상 this를 반환하게 하게 해야 함.
+
+```ts
+export class calculator {
+    constructor(public value: number = 0) {}
+    add(value: number) {
+        this.value += value;
+        return this;
+    }
+    multiply(value: number) {
+        this.value *= value;
+        return this;
+    }
+}
+```
+
+```ts
+import { calculator } from './method-chain';
+let calc = new Calculator();
+let result = calc.add(1).add(2).multiply(3).multiply(4).value;
+console.log(result); // (0 + 1 + 2) * 3 * 4 = 36
+```
