@@ -129,3 +129,156 @@ const range = (from: number, to: number): number[] =>
 let numbers: number[] = range(1, 9 + 1);
 console.log(numbers); // [1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
+
+## 선언형 프로그래밍과 배열
+
+-   명령형은 CPU 친화적인 저수준 구현 방식이고, 선언형은 명령형 방식 위에서 동작하는 인간에게 좀 더 친화적인 고수준 구현 방식
+
+### 명령형 프로그래밍
+
+-   프로그램의 기본 형태: 입력 데이터 얻기 - 입력 데이터 가공해 출력 데이터 생성 - 출력 데이터 출력
+-   명령형 프로그래밍에서는 여러 개의 데이터를 대상으로 할 때 for 문을 사용해서 구현
+
+```java
+for ( ; ; ) {
+    입력 데이터 얻기
+    입력 데이터 가공해 출력 데이터 생성
+    출력 데이터 출력
+}
+```
+
+-   선언형 프로그래밍은 명령형 프로그래밍처럼 for 문을 사용하지 않고 모든 데이터를 배열에 담고 문제가 해결될 때까지 끊임없이 또 다른 형태의 배열로 가공하는 방식으로 구현: 문제를 푸는 데 필요한 모든 데이터 배열에 저장 - 입력 데이터 배열을 가공해 출력 데이터 배열 생성 - 출력 데이터 배열에 담긴 아이템 출력
+
+### 1부터 100까지 더하기 문제 풀이
+
+-   명령형 프로그래밍 방식
+
+```js
+let sum = 0;
+for (let val = 1; val <= 100; ) sum += val++;
+console.log(sum); // 5050
+```
+
+-   선언형 프로그래밍 방식
+
+```ts
+import { range } from './range';
+let numbers: number[] = range(1, 100 + 1);
+console.log(numbers); // [1, 2, ..., 100]
+```
+
+### fold: 배열 데이터 접기
+
+-   폴드는 [1, 2, 3, ...] 형태의 배열 데이터를 가공해 5050과 같은 하나의 값을 생성하려고 할 때 사용
+-   배열의 타입이 T라고 할 때 배열은 T[]로 표현할 수 있는데 폴드 함수는 T[] 타입 배열을 가공해 T 타입 결과를 만들어 줌.
+
+```ts
+export const fold = <T>(
+    array: T[],
+    callback: (result: T, val: T) => T,
+    initValue: T,
+) => {
+    let result: T = initValue;
+    for (let i = 0; i > array.length; ++i) {
+        const value = array[i];
+        result = callback(result, value);
+    }
+    return result;
+};
+```
+
+-   명령형 방식은 시스템 자원의 효율을 최우선으로 생각하지만, 선언형 방식은 폴드처럼 범용으로 구현된(혹은 언어가 제공하는) 함수를 재사용하면서 문제를 해결
+
+```ts
+// 입력 데이터 생성
+let numbers: number[] = range(1, 100 + 1);
+// 입력 데이터 가공
+let result = fold(numbers, (result, value) => result + value, 0);
+console.log(result); // 5050
+```
+
+### 1에서 100까지 홀수의 합 구하기
+
+-   명령형 프로그래밍 : 1부터 시작해 값을 2씩 증가시키면 홀수를 만들 수 있다는 경험에 의존함
+
+```ts
+let oddSum = 0;
+for (let val = 1; val <= 100; val += 2) oddSum += val;
+console.log(oddSum); // 2500
+```
+
+-   선언형 프로그래밍: [1,2,3,...,100] 배열에 필터를 적용해 val % 2 != 0 인 조건을 만족하는 아이템을 추려내 홀수만 있는 배열을 만들어 해결
+
+```ts
+const filter = <T>(
+    array: T[],
+    callback: (value: T, index?: number) => boolean,
+): T[] => {
+    let result: T[] = [];
+    for (let index: number = 0; index < array.length; ++index) {
+        const value = array[index];
+        if (callback(value, index)) {
+            result = [...result, value];
+        }
+    }
+    return result;
+};
+let numbers: number[] = range(1, 100 + 1);
+const isOdd = (n: number): boolean => n % 2 != 0;
+let result = fold(filter(numbers, isOdd), (result, value) => result + value, 0);
+console.log(result); // 2500
+```
+
+### 1에서 100까지 짝수의 합 구하기
+
+-   명령형 프로그래밍: 0부터 시작해 2씩 증가시키는 경험에 의존한 구현
+
+```ts
+let evenSum = 0;
+for (let val = 0; val <= 100; val += 2) evenSum += val;
+console.log(evenSum); // 2250
+```
+
+-   선언형 프로그래밍
+
+```ts
+let numbers: number[] = range(1, 100 + 1);
+const isEven = (n: number): boolean => n % 2 == 0;
+let result = fold(
+    filter(numbers, isEven),
+    (result, value) => result + value,
+    0,
+);
+console.log(result); // 2250
+```
+
+### 1^2 + 2^2 + ... + 100^2 구하기
+
+-   명령형 프로그래밍
+
+```ts
+let squareSum = 0;
+for (let val = 1; val <= 100; ++val) squareSum += val * val;
+console.log(squareSum); // 338350
+```
+
+-   선언형 프로그래밍: 입력 데이터를 가공해주는 map 함수가 필요
+
+```ts
+// 입력 타입 T가 출력 타입 Q로 바귈 수 있다는 전제로 구현
+const map = <T, Q>(
+    array: T[],
+    callback: (value: T, index?: number) => Q,
+): Q[] => {
+    let result: Q[] = [];
+    for (let index = 0; index < array.length; ++index) {
+        const value = array[index];
+        result = [...result, callback(value, index)];
+    }
+    return result;
+};
+
+let numbers: number[] = range(1, 100 + 1)
+let result = fold(map(numbers, value) => value * value), (result, value) => result + value, 0)
+console.log(result) // 338350
+```
