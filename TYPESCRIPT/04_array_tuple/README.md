@@ -490,3 +490,34 @@ const mergeArray = <T>(...arrays: readonly T[][]): T[] => {
     return result;
 };
 ```
+
+## 튜플
+
+-   자바스크립트에서는 튜플이 없으며 단순히 배열의 한 종류로 취급됨
+-   여러 타입에 대응하는 any 타입 배열을 선언
+
+```ts
+let tuple: any[] = [true, 'the result is ok'];
+```
+
+-   any[] 형태는 타입스크립트의 타입 기능을 무력화하므로, 타입스크립트는 튜플의 타입 표기법을 배열과 다르게 선언할 수 있음.
+
+```ts
+const array: number[] = [1, 2, 3, 4];
+const tuple: [boolean, string] = [true, 'the result is ok'];
+```
+
+### 튜플에 타입 별칭 사용하기
+
+-   보통 튜플을 사용할 때는 타입 별칭으로 튜플의 의미를 명확하게 함.
+
+```ts
+type ResultType = [boolean, string];
+const doSomething = (): ResultType => {
+    try {
+        throw new Error('Some error occurs...');
+    } catch (e) {
+        return [false, e.message];
+    }
+};
+```
