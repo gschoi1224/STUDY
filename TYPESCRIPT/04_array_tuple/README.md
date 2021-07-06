@@ -282,3 +282,69 @@ let numbers: number[] = range(1, 100 + 1)
 let result = fold(map(numbers, value) => value * value), (result, value) => result + value, 0)
 console.log(result) // 338350
 ```
+
+## 배열의 메서드
+
+### 전형적인 메서드 체인 방식
+
+```ts
+const multiply = (result, val) => result * val; // 07행에서 사용
+let numbers: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+let tempResult = numbers
+    .filter(val => val % 2 != 0)
+    .map(val => val * val)
+    .reduce(multiply, 1);
+let result = Math.round(Math.sqrt(tempResult));
+console.log(result); // 945
+```
+
+### filter 메서드
+
+-   배열의 타입이 T[]일 때 배열의 filter 메서드는 다음과 같은 형태로 설계되었음
+
+```ts
+filter(callback: (value: T, index?: number): boolean): T[]
+```
+
+-   예시
+
+```ts
+const array = number[] = range(1, 10 + 1)
+let odds: number[] = array.filter((value) => value % 2 != 0)
+let evens: number[] = array.filter(value = value % 2 == 0)
+console.log(odds, evens) // [1, 3, 5, 7, 9] [2, 4, 6, 8, 10]
+```
+
+### map 메서드
+
+-   배열의 타입이 T일 때 배열의 map ㅔㅁ서드는 다음과 같은 형태로 설계되었음
+
+```ts
+map(callback: (value: T, index?: number) : Q): Q[]
+```
+
+-   예시
+
+```ts
+let squres: number[] = range(1, 5 + 1).map((val: number) => val * val);
+console.log(squres); // [1, 4, 9, 16, 25]
+```
+
+### reduce 메서드
+
+-   앞에서 구현한 fold 함수는 타입스크립트 배열의 reduce 메서드로 대체할 수 있음
+-   배열의 타입이 T[]일 때 배열의 reduce 메서드는 다음과 같은 형태로 설계되었음
+
+```ts
+reduce(callback: (result: T, value: T), initialValue: T): T
+```
+
+-   1부터 100까지 더하는 로직을 reduce 메서드를 사용해 구현
+
+```ts
+let reduceSum: number = range(1, 100 + 1).reduce(
+    (result: number, value: number) => result + value,
+    0,
+);
+console.log(reduceSum);
+```
