@@ -348,3 +348,145 @@ let reduceSum: number = range(1, 100 + 1).reduce(
 );
 console.log(reduceSum);
 ```
+
+## 순수 함수와 배열
+
+### 순수 함수란
+
+-   부수 효과(side-effect)가 없는 함수
+-   부수 효과란 함수가 가진 고유한 목적 이외에 다른 효과가 나타나는 것을 의미하며 부작용이라고도 함
+-   부수 효과가 있는 함수는 불순 함수라고 함
+
+### 순수 함수의 조건
+
+-   함수 몸통에 입출력 관련 코드가 없어야 한다.
+-   함수 몸통에서 매개변숫값을 변경시키지 않는다(즉, 매개변수는 const나 readonly 형태로만 사용한다)
+-   함수는 몸통에서 만들어진 결과를 즉시 반환한다.
+-   함수 내부에 전역 변수나 정적 변수를 사용하지 않는다.
+-   함수가 예외를 발생시키지 않는다.
+-   함수가 콜백 함수로 구현되었거나 함수 몸토엥 콜백 함수를 사용하는 코드가 없다.
+-   함수 몸통에 Promise와 같은 비동기 방식으로 동작하는 코드가 없다.
+
+### 예시
+
+-   순수 함수
+
+```ts
+function pure(a: number, b: number): number {
+    return a + b;
+}
+```
+
+-   매개변수를 변경하므로 부수효과 발생
+
+```ts
+function inpure1(array: number[]): void {
+    array.push(1);
+    array.splice(0, 1);
+}
+```
+
+-   g라는 외부 변수를 사용하므로 불순 함수
+
+```ts
+let g = 10;
+function impure2(x: number) {
+    return x + g;
+}
+```
+
+### 타입 수정자 readonly
+
+-   타입스크립트는 순수 함수 구현을 쉽게 하도록 readonly 키워드를 제공함.
+-   readonly 타입으로 선언된 매개변숫값을 변경하는 시도가 있으면 문제가 있는 코드라고 알려줘서 불순 함수가 되지 않게 방지함.
+-   타입스크립트에서 인터페이스, 클래스, 함수의 매개변수 등은 let이나 const 키워드 없이 선언하므로 이런 심벌에 const와 같은 효과를 주려면 readonly 라는 타입 수정자가 필요함.
+
+### 불변과 가변
+
+-   변수가 const나 readonly를 명시하고 있으면 변숫값은 초깃값을 항상 유지하고 이런 변수는 변경할 수 없다는 의미로 `불변(immutable) 변수`라고 함.
+-   let이나 readonly를 명시하지 않은 변수는 언제든 값을 변경할 수 있으므로 `가변(muttable) 변수`라고 함.
+
+### 깊은 복사와 얕은 복사
+
+-   프로그래밍 언어에서 어떤 변숫값을 다른 변숫값으로 설정하는 것을 `복사`라고 표현함.
+-   `깊은 복사`: 대상 변숫값이 바뀔 때 원본 변숫값은 그대로인 형태로 동작
+
+```ts
+let original = 1;
+let copied = original;
+copied += 2;
+console.log(original, copied); // 1 3
+```
+
+-   객체와 배열의 얕은 복사
+
+```ts
+const originalArray = [5, 3, 9, 7];
+const shallowCopiedArray = originalArray;
+shallowCopiedArray[0] = 0;
+console.log(originalArray, shallowCopiedArray); // [0, 3, 9, 7] [0, 3, 9, 7]
+```
+
+-   전개 연산자를 이용한 깊은 복사
+
+```ts
+const oArray = [1, 2, 3, 4];
+const deepCopiedArray = [...oArray];
+deepCopiedArray[0] = 0;
+console.log(oArray, deepCopiedArray); // [1, 2, 3, 4] [0, 2, 3, 4]
+```
+
+### 배열의 sort 메서드를 순수 함수로 구현하기
+
+-   Array 클래스는 sort 메서드를 제공해 배열의 아이템을 오름차순 혹은 내림차순으로 정렬해 줌.
+-   sort 메서드는 원본 배열의 내용을 변경하기 때문에 readonly 타입으로 입력 배열의 내용을 유지한채 정렬할 수 있도록 구현한 예
+
+```ts
+const pureSort = <T>(array: readonly T[]): T[] => {
+    let deepCopied = [...array];
+    return deepCopied.sort();
+};
+let beforeSort = [6, 2, 9, 0];
+const afterSort = pureSort(beforeSort);
+console.log(beforeSort, afterSort); // [6, 2, 9, 0] [0, 2, 6, 9]
+```
+
+### 배열의 순수한 삭제
+
+-   배열에서 특정 아이템을 삭제할 때는 splice 메서드를 사용하지만 splice는 원본 배열의 내용을 변경하므로 순수 함수에서는 사용할 수 없음
+-   filter 메서드를 사용하면 원본 배열의 내용은 훼손하지 않으면서 조건에 맞지 않는 아이템을 삭제할 수 있음
+
+```ts
+const pureDelete = <T>(
+    array: readonly T[],
+    cb: (val: T, index?: number) => boolean,
+): T[] => array.filter((val, index) => cb(val, index) === false);
+const mixedArray: object[] = [
+    [],
+    { name: 'Jack' },
+    { name: 'Jane', age: 32 },
+    ['description'],
+];
+const objectsOnly: object[] = pureDelete(mixedArray, val => Array.isArray(val));
+console.log(mixedArray, objectsOnly);
+// 실행 결과
+// [[], {name: 'Jack'}, {name: 'Jane', age: 32}, ['description']]
+// [{name: 'Jack'}, {name: 'Jane', age: 32}]
+```
+
+### 가변 인수 함수
+
+-   함수를 호출할 때 전달하는 인수의 개수를 제한하지 않는 것
+-   예시
+
+```ts
+const mergeArray = <T>(...arrays: readonly T[][]): T[] => {
+    let result: T[] = [];
+    for (let index = 0; index < array.length; index++) {
+        const array: T[] = arrays[index];
+        // result와 array 배열을 각각 전개(spread)하고 결합해야 T[] 타입 배열을 생성할 수 있다
+        result = [...result, ...array];
+    }
+    return result;
+};
+```
