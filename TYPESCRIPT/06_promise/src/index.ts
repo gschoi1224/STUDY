@@ -1,21 +1,23 @@
-import { readFileSync, readFile } from 'fs';
+import { readFile } from 'fs';
 
-// package.json 파일을 동기 방식으로 읽는 예
-console.log('read package.json using synchronous api...');
-const buffer: Buffer = readFileSync('./package.json');
-console.log(buffer.toString());
-
-// package.json 파일을 비동기 방식으로 읽는 예
 const readFilePromise = (filename: string): Promise<string> =>
-    new Promise<string>((resolve, reject) => {
-        readFile(filename, (error: any, buffer: Buffer) => {
-            if (error) reject(error);
-            else resolve(buffer.toString());
-        });
-    });
+    new Promise<string>(
+        (resolve: (value: string) => void, reject: (error: Error) => void) => {
+            readFile(filename, (err: any, buffer: Buffer) => {
+                if (err) reject(err);
+                else resolve(buffer.toString());
+            });
+        },
+    );
 
-(async () => {
-    const content = await readFilePromise('./package.json');
-    console.log('read package.json using Promise and async/await ...');
-    console.log(content);
-})();
+readFilePromise('./package.json')
+    .then((content: string) => {
+        console.log(content);
+        return readFilePromise('./tsconfig.json');
+    })
+    .then((content: string) => {
+        console.log(content);
+        return readFilePromise('.');
+    })
+    .catch((err: Error) => console.log('error: ', err.message))
+    .finally(() => console.log('프로그램 종료'));
