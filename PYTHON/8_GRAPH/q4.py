@@ -38,6 +38,8 @@ x.sort()
 y.sort()
 z.sort()
 
+# 각각 저장하지 않고 함께 저장한 후 lambda식으로 정렬해도 됨
+# for i in range(3) : q.sort(key=lambda x : x[i])
 for i in range(n - 1) :
     edges.append((x[i+1][0] - x[i][0], x[i][1], x[i+1][1]))
     edges.append((y[i+1][0] - y[i][0], y[i][1], y[i+1][1]))
