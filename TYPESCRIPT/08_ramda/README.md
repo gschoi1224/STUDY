@@ -29,13 +29,17 @@
 ## 실습 프로젝트 만들기
 
 > npm init --y
+
 > npm i -D typescript ts-node @types/node
+
 > mkdir src
 
 > npm i -S ramda
+
 > npm i -D @types/ramda
 
 > npm i -S chance
+
 > npm i -D @types/chance
 
 > yarn tsc --init
