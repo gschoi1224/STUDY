@@ -1,0 +1,17 @@
+{
+  "name": "10_monad",
+  "version": "1.0.0",
+  "description": "-   카테고리 이론에서 사용되는 일종의 코드 설계 패턴",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^16.4.3",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  }
+}
