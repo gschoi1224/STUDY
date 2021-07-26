@@ -71,3 +71,46 @@
 -   `생성기 함수를 구현할 때는 비동기 함수 사용할 수 없음!`
 -   파일을 한 줄씩 읽는 방식으로 생성기 구현하는 것이 방법
 -   [Buffer 타입 객체를 생성해 파일을 1,024Byte씩 읽으며 한 줄씩 찾은 뒤, 찾을 줄의 데이터를 yield 문으로 발생시킴](./src/fileApi/readFileGenerator.ts)
+
+# 몽고 DB에 저장하기
+
+## 패키지
+
+> npm i -S mongodb
+
+> npm i -D @types/mongodb
+
+## 데이터베이스 연결
+
+-   [MongoClient의 connect 함수를 사용해 몽고DB에 접속](./src/mongodb/connect.ts)
+-   import 문으로 하면 에러나고 require 하니까 에러가 나지 않는 이유가 뭘까
+-   [데이터베이스 생성하기](./src/test/makedb-test.ts)
+
+## 컬렉션
+
+-   관계형 DB에서의 테이블
+-   [컬렉션 생성](./src/test/collection-test.ts)
+
+## 문서를 컬렉션에 저장하기
+
+-   [문서를 컬렉션에 저장하는 것은 컬렉션 객체가 제공하는 insertOne 메서드를 사용해 구현](./src/test/insert-document-test.ts)
+
+## 문서 찾기
+
+-   특정 컬렉션에 담긴 문서들은 find 메서드로 찾을 수 있음
+-   [find 메서드는 자바스크립트 배열에서 찾은 객체를 주지 않고, 일단 cursor라는 이름의 객체를 반환하며 cursor 객체의 toArray 메서드로 js 배열을 얻을 수 있음](./src/test/find-test.ts)
+-   findOne메서드는 하나만 찾기 때문에 cursor 대신 문서 객체 자체를 반환함
+
+## 문서 삭제하기
+
+-   [deleteOne 또는 deleteMany 메서드를 사용해 삭제](./src/test/delete-test.ts)
+-   deleteCount라는 이름의 속성에 삭제된 문서의 개수가 담긴 객체를 반환
+
+## 검색 결과 정렬하기
+
+-   find 메서드로 검색한 결과는 sort 메서드를 연이어 호출해 검색 결과를 오름차순 또는 내림차순으로 정렬할 수 있음
+-   컬렉션에 문서 개수가 많아지면 검색 시간이 느려지는데 이를 방지하기 위해 컬렉션에 인덱스를 만들게 됨. 인덱스는 컬렉션 객체의 createIndex 메서드를 사용해 만들 수 있으며 인덱스 항목은 오름차순 정렬일 때는 1, 내림차순 정렬일 때는 -1을 설정
+
+## CSV 파일 몽고DB에 저장하기
+
+-   readCsv.ts 파일 수정해 몽고DB에 담기
