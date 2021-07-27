@@ -8,13 +8,13 @@ export const runServer = mongodb => {
 
     app.use(bodyParser.urlencoded({ extended: true }))
         .use(cors())
-        .get('/', (req, res) => res.json({ message: 'hello world' }))
+        .get('/', (req, res) => res.json({ message: 'Hello world!' }))
         .get('/users/:skip/:limit', async (req, res) => {
             const { skip, limit } = req.params;
+
             const usersCollection = await mongodb.collection('users');
             const cursor = await usersCollection
                 .find({})
-                .sort({ name: 1 })
                 .skip(parseInt(skip))
                 .limit(parseInt(limit));
             const result = await cursor.toArray();
