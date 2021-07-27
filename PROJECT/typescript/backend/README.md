@@ -113,4 +113,16 @@
 
 ## CSV 파일 몽고DB에 저장하기
 
--   readCsv.ts 파일 수정해 몽고DB에 담기
+-   [readCsv.ts 파일 수정해 몽고DB에 담기](./src/insert-csv-mongo.ts)
+
+# 익스프레스로 API 서버 만들기
+
+## 패키지
+
+> npm i -S express body-parser cors
+
+> npm i -D @types/express @types/body-parser @types/cors
+
+## 라우팅 기능
+
+-   app.get('url', 콜백 함수) url부분에 :파라미터 형식으로 작성하면 req.params에서 그 이름으로 된 값을 얻을 수 있다
