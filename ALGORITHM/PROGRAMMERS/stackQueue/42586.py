@@ -5,7 +5,7 @@ def solution(progresses, speeds) :
     cnt = 0
     for i in range(len(progresses)) :
         remain = 100 - progresses[i]
-        days = math.trunc(remain / speeds[i])
+        days = math.ceil(remain / speeds[i])
         if cnt == 0 :
             cnt += 1
             day = days
