@@ -3,10 +3,10 @@ function combination(arr, num) {
     if (num === 1) return arr.map(a => [a]);
     arr.forEach((a, i) => {
         const fixed = a;
-        const rest = arr.filter((r, idx) => idx !== i);
+        const rest = arr.slice(i + 1);
         const combined = combination(rest, num - 1);
         combined.forEach(c => {
-            result.push([fixed, ...c]);
+            result.push([fixed, ...c].sort());
         });
     });
     return result;
