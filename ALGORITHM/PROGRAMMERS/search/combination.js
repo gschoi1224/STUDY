@@ -6,7 +6,7 @@ function combination(arr, num) {
         const rest = arr.slice(i + 1);
         const combined = combination(rest, num - 1);
         combined.forEach(c => {
-            result.push([fixed, ...c].sort());
+            result.push([fixed, ...c]);
         });
     });
     return result;
