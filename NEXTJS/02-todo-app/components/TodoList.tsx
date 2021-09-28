@@ -7,6 +7,9 @@ import CheckMarkIcon from '../public/statics/svg/check_mark.svg';
 import { checkTodoAPI } from '../pages/api/todos/[id]';
 import { useRouter } from 'next/dist/client/router';
 import { deleteTodoAPI } from '../lib/data/todo';
+import { useSelector } from '../store';
+import { todoActions } from '../store/todo';
+import { useDispatch } from 'react-redux';
 
 const Container = styled.div`
     width: 100%;
@@ -126,13 +129,8 @@ const Container = styled.div`
         }
     }
 `;
-
-interface IProps {
-    todos: TodoType[];
-}
-
-const TodoList: React.FC<IProps> = ({ todos }) => {
-    const router = useRouter();
+const TodoList: React.FC = () => {
+    const todos = useSelector(state => state.todo.todos);
     const [localTodos, setLocalTodos] = useState(todos);
     // 객체의 문자열 인덱스 사용을 위한 타입
     type ObjectIndexType = {
@@ -150,10 +148,15 @@ const TodoList: React.FC<IProps> = ({ todos }) => {
         return colors;
     }, [localTodos]);
 
+    const dispatch = useDispatch();
     // 투두 체크하기
     const checkTodo = async (id: number) => {
         try {
             await checkTodoAPI(id);
+            const newTodos = todos.map(todo =>
+                todo.id === id ? { ...todo, checked: !todo.checked } : todo,
+            );
+            dispatch(todoActions.setTodo(newTodos));
             console.log('체크하였습니다.');
             // 체크 적용 방법 1(새로고침)
             // router.reload();
@@ -177,6 +180,7 @@ const TodoList: React.FC<IProps> = ({ todos }) => {
         try {
             await deleteTodoAPI(id);
             const newTodos = localTodos.filter(todo => todo.id !== id);
+            dispatch(todoActions.setTodo(newTodos));
             setLocalTodos(newTodos);
             console.log('삭제했습니다.');
         } catch (e) {
