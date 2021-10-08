@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import LogoIcon from '../public/statics/svg/logo/logo.svg';
-import LogoTextIcon from '../public/statics/svg/logo/logo_text.svg';
+import LogoIcon from '../public/static/svg/logo/logo.svg';
+import LogoTextIcon from '../public/static/svg/logo/logo_text.svg';
 import Link from 'next/link';
 import palette from '../styles/palette';
 import ModalPortal from './ModalPortal';
@@ -34,7 +34,7 @@ const Container = styled.div`
             border: 0;
             border-radius: 21px;
             background-color: white;
-            cursor: pointer-events;
+            cursor: pointer;
             outline: none;
             &:hover {
                 background-color: ${palette.gray_f7};

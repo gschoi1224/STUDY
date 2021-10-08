@@ -5,7 +5,7 @@ export default {
     amaranth: '#E51E53',
     orange: '#fc642d',
     main_pink: '#FF385C',
-    bittersweet: '#ff5af5',
+    bittersweet: '#FF5A5F',
     black: '#222222',
     charcoal: '#484848',
     snow: '#FFF8F6',
