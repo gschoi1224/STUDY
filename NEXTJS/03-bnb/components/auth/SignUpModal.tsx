@@ -141,9 +141,16 @@ const SignUpModal: React.FC = () => {
         setBirthYear(e.target.value);
     };
 
+    const [validateMode, setValidateMode] = useState(false);
     // 회원가입 폼 제출하기
     const onSubmitSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        setValidateMode(true);
+
+        if (!email || !lastname || !firstname || !password) {
+            return undefined;
+        }
 
         try {
             console.log(new Date(`${birthYear}-${birthMonth}-${birthDay}`));
@@ -174,6 +181,9 @@ const SignUpModal: React.FC = () => {
                     name="email"
                     value={email}
                     onChange={onChangeEmail}
+                    validateMode={validateMode}
+                    isValid={!!email}
+                    errorMessage="이메일이 필요합니다."
                 />
             </div>
             <div className="input-wrapper">
@@ -182,6 +192,10 @@ const SignUpModal: React.FC = () => {
                     icon={<PersonIcon />}
                     value={lastname}
                     onChange={onChangeLastname}
+                    validateMode={validateMode}
+                    useValidation
+                    isValid={!!lastname}
+                    errorMessage="이름을 입력하세요."
                 />
             </div>
             <div className="input-wrapper">
@@ -190,6 +204,10 @@ const SignUpModal: React.FC = () => {
                     icon={<PersonIcon />}
                     value={firstname}
                     onChange={onChangeFirstname}
+                    validateMode={validateMode}
+                    useValidation
+                    isValid={!!firstname}
+                    errorMessage="성을 입력하세요."
                 />
             </div>
             <div className="input-wrapper sign-up-password-input-wrapper">
@@ -205,6 +223,10 @@ const SignUpModal: React.FC = () => {
                     }
                     value={password}
                     onChange={onChangePassword}
+                    validateMode={validateMode}
+                    useValidation
+                    isValid={!!password}
+                    errorMessage="비밀번호를 입력하세요."
                 />
             </div>
 
