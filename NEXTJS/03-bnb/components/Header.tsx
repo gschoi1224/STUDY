@@ -82,7 +82,6 @@ const Container = styled.div`
 const Header: React.FC = () => {
     // 모달을 열고 닫을 boolean값
     const { openModal, ModalPortal, closeModal } = useModal();
-    const [modalOpened, setModalOpened] = useState(false);
     return (
         <Container>
             <Link href="/">
@@ -95,7 +94,7 @@ const Header: React.FC = () => {
                 <button
                     type="button"
                     className="header-sign-up-button"
-                    onClick={() => setModalOpened(true)}
+                    onClick={() => openModal()}
                 >
                     회원가입
                 </button>
@@ -103,11 +102,9 @@ const Header: React.FC = () => {
                     로그인
                 </button>
             </div>
-            {modalOpened && (
-                <ModalPortal>
-                    <SignUpModal closeModal={closeModal} />
-                </ModalPortal>
-            )}
+            <ModalPortal>
+                <SignUpModal closeModal={closeModal} />
+            </ModalPortal>
         </Container>
     );
 };

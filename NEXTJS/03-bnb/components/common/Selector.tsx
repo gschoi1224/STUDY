@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 import React from 'react';
 import styled, { css } from 'styled-components';
+import { useSelector } from '../../store';
 import palette from '../../styles/palette';
 
 const Container = styled.div<{ isValid: boolean; validateMode: boolean }>`
@@ -42,16 +43,19 @@ interface IProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
     disabledOptions?: string[];
     value?: string;
     defaultValue?: string;
+    isValid?: boolean;
 }
 
 const Selector: React.FC<IProps> = ({
     options = [],
     disabledOptions = [],
     defaultValue = '',
+    isValid,
     ...props
 }) => {
+    const validateMode = useSelector(state => state.common.validateMode);
     return (
-        <Container>
+        <Container isValid={!!isValid} validateMode={validateMode}>
             <select {...props}>
                 {disabledOptions.map((option, index) => (
                     <option key={index} value={option} disabled>
