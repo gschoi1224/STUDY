@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import palette from '../../styles/palette';
 import CloseXIcon from '../../public/static/svg/modal/modal_close_x_icon.svg';
@@ -91,9 +91,13 @@ const Container = styled.form`
     }
 `;
 
+interface IProps {
+    closeModal: () => void;
+}
+
 const PASSWORD_MIN_LENGTH = 8;
 
-const SignUpModal: React.FC = () => {
+const SignUpModal: React.FC<IProps> = ({ closeModal }) => {
     const [email, setEmail] = useState('');
     const [lastname, setLastname] = useState('');
     const [firstname, setFirstname] = useState('');
@@ -185,6 +189,7 @@ const SignUpModal: React.FC = () => {
                 };
                 const { data } = await signupAPI(signUpBody);
                 dispatch(userActions.setLoggedUser(data));
+                closeModal();
             } catch (e) {
                 console.error(e);
             }
@@ -224,9 +229,15 @@ const SignUpModal: React.FC = () => {
         [password],
     );
 
+    // 언마운트 시에 validateMode 초기화
+    useEffect(() => {
+        return () => {
+            setValidateMode(false);
+        };
+    }, []);
     return (
         <Container onSubmit={onSubmitSignUp}>
-            <CloseXIcon className="modal-close-x-icon" />
+            <CloseXIcon className="modal-close-x-icon" onClick={closeModal} />
             <div className="input-wrapper">
                 <Input
                     placeholder="이메일 주소"

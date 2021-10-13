@@ -4,8 +4,8 @@ import LogoIcon from '../public/static/svg/logo/logo.svg';
 import LogoTextIcon from '../public/static/svg/logo/logo_text.svg';
 import Link from 'next/link';
 import palette from '../styles/palette';
-import ModalPortal from './ModalPortal';
 import SignUpModal from './auth/SignUpModal';
+import useModal from '../hooks/useModal';
 
 const Container = styled.div`
     position: sticky;
@@ -81,8 +81,8 @@ const Container = styled.div`
 
 const Header: React.FC = () => {
     // 모달을 열고 닫을 boolean값
+    const { openModal, ModalPortal, closeModal } = useModal();
     const [modalOpened, setModalOpened] = useState(false);
-
     return (
         <Container>
             <Link href="/">
@@ -104,8 +104,8 @@ const Header: React.FC = () => {
                 </button>
             </div>
             {modalOpened && (
-                <ModalPortal closePortal={() => setModalOpened(false)}>
-                    <SignUpModal />
+                <ModalPortal>
+                    <SignUpModal closeModal={closeModal} />
                 </ModalPortal>
             )}
         </Container>
