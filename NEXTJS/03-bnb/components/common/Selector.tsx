@@ -58,7 +58,7 @@ const Selector: React.FC<IProps> = ({
         <Container isValid={!!isValid} validateMode={validateMode}>
             <select {...props}>
                 {disabledOptions.map((option, index) => (
-                    <option key={index} value={option} disabled selected>
+                    <option key={index} value={option}>
                         {option}
                     </option>
                 ))}
