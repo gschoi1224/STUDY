@@ -8,9 +8,10 @@ import Input from '../common/Input';
 import Button from '../common/Button';
 import { useDispatch } from 'react-redux';
 import { authActions } from '../../store/auth';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { loginAPI } from '../../lib/api/auth';
 import useValidateMode from '../../hooks/useValidateMode';
+import { userActions } from '../../store/user';
 
 const Container = styled.form`
     width: 568px;
@@ -83,13 +84,20 @@ const LoginModal: React.FC<IProps> = ({ closeModal }) => {
             const loginBody = { email, password };
             try {
                 const { data } = await loginAPI(loginBody);
-                console.log(data);
+                dispatch(userActions.setLoggedUser(data));
+                closeModal();
             } catch (e) {
                 console.log(e);
             }
         }
     };
 
+    // 컴포넌트 사라질 때 validateMode 초기화
+    useEffect(() => {
+        return () => {
+            setValidateMode(false);
+        };
+    }, []);
     return (
         <Container onSubmit={onSubmitLogin}>
             <CloseXIcon className="modal-close-x-icon" onClick={closeModal} />
