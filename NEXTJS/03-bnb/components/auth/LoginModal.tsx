@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { authActions } from '../../store/auth';
 import React, { useState } from 'react';
 import { loginAPI } from '../../lib/api/auth';
+import useValidateMode from '../../hooks/useValidateMode';
 
 const Container = styled.form`
     width: 568px;
@@ -55,6 +56,7 @@ interface IProps {
     closeModal: () => void;
 }
 const LoginModal: React.FC<IProps> = ({ closeModal }) => {
+    const { setValidateMode } = useValidateMode();
     const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -74,6 +76,7 @@ const LoginModal: React.FC<IProps> = ({ closeModal }) => {
     // 로그인 클릭 시
     const onSubmitLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setValidateMode(true);
         if (!email || !password) {
             alert('이메일과 비밀번호를 입력해주세요.');
         } else {
@@ -98,18 +101,30 @@ const LoginModal: React.FC<IProps> = ({ closeModal }) => {
                     icon={<MailIcon />}
                     onChange={onChangeEmail}
                     value={email}
+                    isValid={!!email}
+                    errorMessage="이메일이 필요합니다."
                 />
             </div>
-            <div className="login-input-wrapper">
+            <div className="login-input-wrapper login-password-input-wrapper">
                 <Input
                     placeholder="비밀번호 설정하기"
                     icon={
-                        isPasswordHided ? <ClosedEyeIcon /> : <OpenedEyeIcon />
+                        isPasswordHided ? (
+                            <ClosedEyeIcon
+                                onClick={() => setIsPasswordHided(false)}
+                            />
+                        ) : (
+                            <OpenedEyeIcon
+                                onClick={() => setIsPasswordHided(true)}
+                            />
+                        )
                     }
                     type={isPasswordHided ? 'password' : 'text'}
                     value={password}
                     name="password"
                     onChange={onChangePassword}
+                    isValid={!!password}
+                    errorMessage="비밀번호를 입력하세요."
                 />
             </div>
             <div className="login-modal-submit-button-wrapper">
