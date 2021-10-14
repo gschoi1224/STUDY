@@ -72,5 +72,5 @@ const Selector: React.FC<IProps> = ({
         </Container>
     );
 };
-
-export default Selector;
+// props의 값이 같다면 리렌더를 방지하기 위해
+export default React.memo(Selector);

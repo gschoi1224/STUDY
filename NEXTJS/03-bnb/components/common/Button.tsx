@@ -23,4 +23,5 @@ const Button: React.FC<IProps> = ({ children, ...props }) => {
     return <Container {...props}>{children}</Container>;
 };
 
-export default Button;
+// props의 값이 같다면 리렌더를 방지하기 위해
+export default React.memo(Button);
