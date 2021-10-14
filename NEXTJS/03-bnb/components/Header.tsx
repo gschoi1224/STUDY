@@ -12,6 +12,7 @@ import { authActions } from '../store/auth';
 import AuthModal from './auth/AuthModal';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { logoutAPI } from '../lib/api/auth';
+import { userActions } from '../store/user';
 
 const Container = styled.div`
     position: sticky;
@@ -149,6 +150,7 @@ const Header: React.FC = () => {
     const logout = async () => {
         try {
             await logoutAPI();
+            dispatch(userActions.initUser());
         } catch (e) {
             console.log(e.message);
         }
