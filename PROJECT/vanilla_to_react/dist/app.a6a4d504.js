@@ -125,6 +125,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -147,6 +159,7 @@ var Component = /*#__PURE__*/function () {
 
     this.$target = $target;
     this.setup();
+    this.setEvent();
     this.render();
   }
 
@@ -162,7 +175,6 @@ var Component = /*#__PURE__*/function () {
     key: "render",
     value: function render() {
       this.$target.innerHTML = this.template();
-      this.setEvent();
     }
   }, {
     key: "setEvent",
@@ -172,6 +184,20 @@ var Component = /*#__PURE__*/function () {
     value: function setState(newState) {
       this.$state = _objectSpread(_objectSpread({}, this.$state), newState);
       this.render();
+    }
+  }, {
+    key: "addEvent",
+    value: function addEvent(eventType, selector, callback) {
+      var children = _toConsumableArray(this.$target.querySelectorAll(selector));
+
+      var isTarget = function isTarget(target) {
+        return children.includes(target) || target.closest(selector);
+      };
+
+      this.$target.addEventListener(eventType, function (event) {
+        if (!isTarget(event.target)) return false;
+        callback(event);
+      });
     }
   }]);
 
@@ -247,20 +273,32 @@ var Items = /*#__PURE__*/function (_Component) {
     key: "template",
     value: function template() {
       var items = this.$state.items;
-      return "\n            <ul>\n                ".concat(items.map(function (item) {
-        return "<li>".concat(item, "</li>");
-      }).join(''), "\n            </ul>\n            <button>\uCD94\uAC00</button>\n        ");
+      return "\n            <ul>\n                ".concat(items.map(function (item, key) {
+        return "\n                <li>\n                    ".concat(item, "\n                    <button class='deleteBtn' data-index='").concat(key, "'>\uC0AD\uC81C</button>\n                </li>\n                ");
+      }).join(''), "\n            </ul>\n            <button class='addBtn'>\uCD94\uAC00</button>\n        ");
     }
   }, {
     key: "setEvent",
     value: function setEvent() {
       var _this = this;
 
-      this.$target.querySelector('button').addEventListener('click', function () {
+      this.addEvent('click', '.addBtn', function (_ref) {
+        var target = _ref.target;
         var items = _this.$state.items;
 
         _this.setState({
           items: [].concat(_toConsumableArray(items), ["item".concat(items.length + 1)])
+        });
+      });
+      this.addEvent('click', '.deleteBtn', function (_ref2) {
+        var target = _ref2.target;
+
+        var items = _toConsumableArray(_this.$state.items);
+
+        items.splice(target.dataset.index, 1);
+
+        _this.setState({
+          items: items
         });
       });
     }
@@ -287,7 +325,6 @@ var App = function App() {
 };
 
 new App();
-console.log('hi~');
 },{"./Components/Items.js":"src/Components/Items.js"}],"C:/Users/CGS/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -316,7 +353,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57969" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65093" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

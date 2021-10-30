@@ -8,5 +8,3 @@ class App {
 }
 
 new App();
-
-console.log('hi~');
